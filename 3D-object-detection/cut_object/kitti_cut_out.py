@@ -7,7 +7,6 @@ from scipy.spatial.transform import Rotation as R
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 0], [0, 255, 0], [0, 0, 255], [0, 0, 0]])
 TEST = False
-TEST_1 = True
 
 from cut_bbox import cut_bounding_box
 from cutout import *
@@ -50,18 +49,7 @@ if __name__ == '__main__':
         else:
             frame_name = int(frame_name)
             current_directory.append(frame_name)
-
-    if TEST_1:
-        tmp = len(glob.glob(f'{data_path}/velodyne/*.bin'))
-        tmp_array = []
-        for i in range(tmp):
-            if i in current_directory:
-                print(f'{i}')
-                continue
-            else:
-                tmp_array.append(i)
-
-        current_directory = tmp_array
+            
 
     for frame in current_directory:
         print(f'{frame:06d}')
