@@ -1,7 +1,7 @@
-# This file is covered by the LICENSE file in the root of this project.
+# Adjusted config file from SemanticKITTI dataset
 path:
   dataset_path : "/datagrid/personal/vacekpa2/students"
-  maps_path : "/datagrid/personal/vacekpa2/students/sebekpe1/Semantic_KITTI/maps/small/npz"
+  maps_path : "/datagrid/personal/vacekpa2/students/sebekpe1/Semantic_KITTI/maps/small/npz" # must end: "/maps/small/npz"
   annotation_path : "/datagrid/personal/vacekpa2/students/semantic_kitti/orig_format"
   bbox_path : "/datagrid/personal/vacekpa2/students/semantic_kitti/cut_objects"
   output_path : "/datagrid/personal/vacekpa2/students/semantic_kitti"
