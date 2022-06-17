@@ -1,0 +1,111 @@
+# This file is covered by the LICENSE file in the root of this project.
+path:
+  dataset_path : "/datagrid/personal/vacekpa2/students/waymo-training"
+  maps_path : "/datagrid/personal/vacekpa2/students/waymo-aug/maps/small/npz"
+  annotation_path : "/datagrid/personal/vacekpa2/students/waymo-aug/orig_format"
+  bbox_path : "/datagrid/personal/vacekpa2/students/waymo-aug/cut_objects"
+  output_path : "/datagrid/personal/vacekpa2/students/waymo-aug"
+insertion:
+  classes : [5, 6, 7]
+  min_points :
+    5 : 30
+    6 : 20
+    7 : 20
+  random : True
+  number_of_object : 10    # sum of objects if rondom is True
+  number_of_classes : [1, 1, 1, 1, 1, 1]  # number of objects if random is False
+  placement:
+    5 : [1, 3]
+    6 : [1, 3]
+    7 : [2, 3]
+  placement_labels:
+    1: [18, 19]
+    2: [22]
+    3: [20]
+  labels_shortcut:
+    1: "c"
+    2: "ov"
+    3: "b"
+    4: "t"
+    5: "mc"
+    6: "bc"
+    7: "P"
+
+labels:
+  # Bicyclist, Construction Cone, Bicycle, Motorcycle,
+  0 : "undefined" #?
+  1 : "car"
+  2 : "other-vehicle" # Other Vehicle (trailer)
+  3 : "bus"
+  4 : "truck" #? Bagr
+  5 : "motorcyclist"
+  6 : "bicyclist" # kolobezkq!!!!!! WTF?
+  7 : "pedestrian"
+  8 : "sign"
+  9 : "traffic_light" #?
+  10: "pole"
+  14: "building"
+  15: "vegetation"
+  16: "tree_trunk"
+  17: "curb"
+  18: "road"
+  19: "lane_marker"
+  20: "walkable" # crosswalk
+  21: "other_ground" #?
+  22: "sidewalk"
+
+color_map: # bgr
+  0 : [0, 0, 0]
+  1 : [245, 150, 100]
+  2 : [30, 30, 255 ]
+  3 : [200, 40, 255 ]
+  4 : [90, 30, 150 ]
+  5 : [255, 0, 255 ]
+  6 : [255, 150, 255 ]
+  7 : [30, 30, 255]
+  8 : [245, 230, 100]
+  9 : [0, 0, 255]
+  10: [150, 240, 255]
+  11: [150, 0, 0] #?
+  14: [0, 200, 255]
+  15: [0, 175, 0]
+  16: [0, 60, 135]
+  17: [175, 0, 175]
+  18: [255, 0, 255]
+  19: [170, 255, 150]
+  20: [100, 0, 100]
+  21: [75, 0, 175]
+  22: [75, 0, 75]
+  # TMP END
+  48: [75, 0, 75]
+  49: [75, 0, 175]
+  50: [0, 200, 255]
+  51: [50, 120, 255]
+  52: [0, 150, 255]
+  60: [170, 255, 150]
+  70: [0, 175, 0]
+  71: [0, 60, 135]
+  72: [80, 240, 150]
+  80: [150, 240, 255]
+  81: [0, 0, 255]
+  99: [255, 255, 50]
+  252: [245, 150, 100]
+  256: [255, 0, 0]
+  253: [200, 40, 255]
+  254: [30, 30, 255]
+  255: [90, 30, 150]
+  257: [250, 80, 100]
+  258: [180, 30, 80]
+  259: [255, 0, 0]
+  260: [255, 255, 255]
+split: # sequence numbers
+  skip:
+    - ""
+#    - "11119453952284076633_1369_940_1389_940"
+#    - "7643597152739318064_3979_000_3999_000"
+#    - "5121298817582693383_4882_000_4902_000"
+#    - "6799055159715949496_2503_000_2523_000"
+#    - "11076364019363412893_1711_000_1731_000"
+#    - "4277109506993614243_1648_000_1668_000"
+#    - "4392459808686681511_5006_200_5026_200"
+#    - "7940496892864900543_4783_540_4803_540"

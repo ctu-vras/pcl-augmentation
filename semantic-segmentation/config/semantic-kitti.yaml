@@ -1,10 +1,10 @@
-# Adjusted config file from SemanticKITTI dataset
+# This file is covered by the LICENSE file in the root of this project.
 path:
   dataset_path : "/datagrid/personal/vacekpa2/students"
-  maps_path : "/datagrid/personal/vacekpa2/students/sebekpe1/Semantic_KITTI/maps/small/npz" # must end: "/maps/small/npz"
+  maps_path : "/datagrid/personal/vacekpa2/students/sebekpe1/Semantic_KITTI/maps/small/npz"
   annotation_path : "/datagrid/personal/vacekpa2/students/semantic_kitti/orig_format"
   bbox_path : "/datagrid/personal/vacekpa2/students/semantic_kitti/cut_objects"
-  output_path : "/datagrid/personal/vacekpa2/students/semantic_kitti"
+  output_path : "/datagrid/personal/vacekpa2/students/semantic_kitti-demo"
 insertion:
   classes : [11, 15, 18, 30, 253, 255]
   min_points :
@@ -28,6 +28,10 @@ insertion:
     32 : [1, 3]
     253 : [1, 3]
     255 : [1, 3]
+  placement_labels:
+    1: [40, 60]
+    2: [48]
+    3: [44]
   labels_shortcut:
     11 : "b"
     15 : "m"
