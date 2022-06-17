@@ -5,19 +5,11 @@ import math
 import glob
 # import open3d as o3d
 import yaml
+from datasets import *
 
 MAC = False
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [123, 123, 123], [0, 255, 0], [0, 255, 0], [0, 0, 255]])
-
-VELO_2_CAM = np.array([[7.533745e-03, -9.999714e-01, -6.166020e-04, -4.069766e-03],
-                       [1.480249e-02, 7.280733e-04, -9.998902e-01, -7.631618e-02],
-                       [9.998621e-01, 7.523790e-03, 1.480755e-02, -2.717806e-01],
-                       [0, 0, 0, 1]])
-MY_CALIB = np.array([[0, -1, 0, 0],
-                       [0, 0, -1, 0],
-                       [1, 0, 0, 0],
-                       [0, 0, 0, 1]])
 
 ANNOTATION = False
 
@@ -54,17 +46,74 @@ def create_matrix(transform_data):
     return out
 
 
+def dataset_selection():
+    quit = False
+    dataset = 'SemanticKITTI'
+    while not quit:
+        print('Choose dataset:')
+        print('1 - SemanticKITTI')
+        print('2 - Waymo')
+        tmp = input()
+        if tmp == '1' or tmp == '2':
+            quit = True
+            if tmp == '1':
+                dataset = 'SemanticKITTI'
+            else:
+                dataset = 'Waymo'
+        else:
+            print('Wrong input try again')
+
+    sequence = None
+    if dataset == 'SemanticKITTI':
+        print('SemanticKITTI was chosen')
+        if MAC:
+            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{sequence:02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+        else:
+            with open('../config/semantic-kitti.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{sequence:02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+    elif dataset == 'Waymo':
+        print('Waymo was chosen')
+        if MAC:
+            with open('../config/waymo-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+        else:
+            with open('../config/waymo.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+    return config, dataset_functions, sequence
+
+
 if __name__ == '__main__':
     '''
     making driveable area from scenes
     '''
-    if MAC:
-        with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-            config = yaml.safe_load(file)
-
-    else:
-        with open('../config/semantic-kitti.yaml', 'r') as file:
-            config = yaml.safe_load(file)
+    config, dataset_functions, sequence = dataset_selection()
 
     data_path = config['path']['dataset_path']
     save_path = config['path']['maps_path']
@@ -74,6 +123,8 @@ if __name__ == '__main__':
     save_path.pop()
     save_path = '/'.join(save_path)
 
+    surface_labels = config['insertion']['placement_labels'][1] + config['insertion']['placement_labels'][2] + \
+                     config['insertion']['placement_labels'][3]
 
     if not os.path.exists(f'{save_path}/maps'):
         os.mkdir(f'{save_path}/maps')
@@ -84,107 +135,103 @@ if __name__ == '__main__':
     if not os.path.exists(f'{save_path}/maps/small/npz'):
         os.mkdir(f'{save_path}/maps/small/npz')
 
-    for sequence in config['split']['train']:
-        current_directory = glob.glob(f'{data_path}/sequences/{sequence:02d}/velodyne/*.bin')
-        current_directory.sort()
+    old_sequence = dataset_functions.sequence
+    new_sequence = dataset_functions.sequence
+    idx = 0
+    num_seq_pcl = 0
 
-        poses = open(f'{data_path}/sequences/{sequence:02d}/poses.txt')
-
+    while len(dataset_functions) > 0:
         max_global_x = -math.inf
         min_global_x = math.inf
         max_global_y = -math.inf
         min_global_y = math.inf
+        print(f'OLD:{old_sequence} CREATING NEW:{new_sequence}')
+        while old_sequence == new_sequence:
 
-        for file in current_directory:
-            if file.endswith('.bin'):
-                print(file)
-                point_cloud = np.fromfile(file, dtype=np.float32).reshape(-1, 4)
+            pcl, t_matrix, _, _, new_sequence = dataset_functions[idx]
 
-                transformation_matrix = poses.readline()
-                transformation_matrix = transformation_matrix.split(' ')
+            if old_sequence != new_sequence:
+                break
 
-                assert len(transformation_matrix) == 12, 'Error in poses. Point-cloud has no transformation matrix.'
+            points = pcl[:, :4]
+            points[:, 3] = 1
+            points = t_matrix @ points.T
+            points = (points / points[3, :]).T
 
-                transformation_matrix = create_matrix(transformation_matrix)
+            if np.max(points, axis=0)[0] > max_global_x:
+                max_global_x = np.max(points, axis=0)[0]
+            if np.min(points, axis=0)[0] < min_global_x:
+                min_global_x = np.min(points, axis=0)[0]
+            if np.max(points, axis=0)[1] > max_global_y:
+                max_global_y = np.max(points, axis=0)[1]
+            if np.min(points, axis=0)[1] < min_global_y:
+                min_global_y = np.min(points, axis=0)[1]
 
-                transformation_matrix = np.dot(transformation_matrix, VELO_2_CAM)
-                transformation_matrix = np.dot(np.linalg.inv(MY_CALIB), transformation_matrix)
+            idx += 1
+            if idx == len(dataset_functions):
+                break
 
-                for i in range(len(point_cloud)):
-                    point = point_cloud[i]
-                    x = np.array([[point[0]], [point[1]], [point[2]], [1.]])
-                    global_position = np.dot(transformation_matrix, x)
+        num_seq_pcl = idx
 
-                    if global_position[0][0] > max_global_x:
-                        max_global_x = global_position[0][0]
-                    if global_position[0][0] < min_global_x:
-                        min_global_x = global_position[0][0]
-                    if global_position[1][0] > max_global_y:
-                        max_global_y = global_position[1][0]
-                    if global_position[1][0] < min_global_y:
-                        min_global_y = global_position[1][0]
-        print(f'SEQUENCE {sequence:02d}')
+        print(f'SEQUENCE {old_sequence}')
         print('LEFT TOP: [', min_global_x, ',', min_global_y, ']')
         print('RIGHT BOTTOM: [', max_global_x, ',', max_global_y, ']')
 
-        min_global_x = int(min_global_x)
-        min_global_y = int(min_global_y)
+        min_global_x = int(np.floor(min_global_x))
+        min_global_y = int(np.floor(min_global_y))
 
         max_global_y = int(max_global_y) + 1
         max_global_x = int(max_global_x) + 1
 
-        size_x = int(max_global_x-min_global_x)
+        size_x = int(max_global_x - min_global_x)
 
-        size_y = int(max_global_y-min_global_y)
+        size_y = int(max_global_y - min_global_y)
 
         print(size_x, size_y)
 
         scene_driveable_area = np.zeros((size_x, size_y))
 
-        poses.close()
+        skip = False
 
-        poses = open(f'{data_path}/sequences/{sequence:02d}/poses.txt')
+        for i in range(num_seq_pcl):
+            pcl, t_matrix, _, _, _ = dataset_functions[0]
+            dataset_functions.delete_item(0, subdirectoties=False)
 
-        for file in current_directory:
-            if file.endswith('.bin'):
+            if os.path.exists(f'{save_path}/maps/small/picture/{old_sequence}.png'):
+                skip = True
+                continue
 
-                print(file)
-                point_cloud = np.fromfile(file, dtype=np.float32).reshape(-1, 4)
-                frame_number = int(file.split('/')[-1].split('.')[0])
-                labels = np.fromfile(f'{data_path}/sequences/{sequence:02d}/labels/{frame_number:06d}.label', dtype=np.uint32).reshape(-1,1)
+            points = pcl[:, :4]
+            points[:, 3] = 1
+            points = t_matrix @ points.T
+            points = (points / points[3, :]).T
+            pcl[:, :3] = points[:, :3]
 
-                labels = labels & 0xFFFF
+            for point in pcl:
 
-                point_cloud = np.hstack((point_cloud, labels))
+                if not point[4] in surface_labels:
+                    continue
 
-                transformation_matrix = poses.readline()
-                transformation_matrix = transformation_matrix.split(' ')
-                assert len(transformation_matrix) == 12, 'Error in poses. Point-cloud has no transformation matrix.'
+                position_x = point[0] - min_global_x
+                position_y = point[1] - min_global_y
+                assert not (position_x < 0 or position_y < 0), f'Indexing error in: {old_sequence}/{i}, position x:{position_x}, y:{position_y}, {point}'
 
-                transformation_matrix = create_matrix(transformation_matrix)
-
-                transformation_matrix = np.dot(transformation_matrix, VELO_2_CAM)
-                transformation_matrix = np.dot(np.linalg.inv(MY_CALIB), transformation_matrix)
-
-                for i in range(len(point_cloud)):
-                    point = point_cloud[i]
-                    if point[4] != 40 and point[4] != 48 and point[4] != 44:
-                        continue
-                    x = np.array([[point[0]], [point[1]], [point[2]], [1.]])
-                    global_position = np.dot(transformation_matrix, x)
-
-                    position_x = global_position[0][0] - min_global_x
-                    position_y = global_position[1][0] - min_global_y
-                    assert not (position_x < 0 or position_y < 0), f'Indexing error in: {file}'
-
-                    if point[4] == 40:
+                if point[4] in config['insertion']['placement_labels'][1]:
+                    if scene_driveable_area[int(position_x)][int(position_y)] != 3:
                         scene_driveable_area[int(position_x)][int(position_y)] = 1
-                    elif point[4] == 44:
-                        scene_driveable_area[int(position_x)][int(position_y)] = 3
-                    else:
+
+                elif point[4] in config['insertion']['placement_labels'][3]:
+                    scene_driveable_area[int(position_x)][int(position_y)] = 3
+
+                else:
+                    if scene_driveable_area[int(position_x)][int(position_y)] != 3:
                         scene_driveable_area[int(position_x)][int(position_y)] = 2
 
-        poses.close()
+        if not skip:
 
-        create_image(scene_driveable_area, f'{save_path}/maps/small/picture/{sequence:02d}.png')
-        np.savez(f'{save_path}/maps/small/npz/{sequence:02d}', move=np.array([[min_global_x], [min_global_y], [0], [1]]), map=scene_driveable_area)
+            create_image(scene_driveable_area, f'{save_path}/maps/small/picture/{old_sequence}.png')
+            np.savez(f'{save_path}/maps/small/npz/{old_sequence}',
+                     move=np.array([[min_global_x], [min_global_y], [0], [1]]), map=scene_driveable_area)
+
+        idx = 0
+        old_sequence = new_sequence
