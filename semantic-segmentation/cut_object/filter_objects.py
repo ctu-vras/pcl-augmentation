@@ -5,6 +5,7 @@ import math
 import glob
 import yaml
 from scipy.spatial.transform import Rotation as R
+from datasets import *
 
 from tools.cut_bbox import cut_bounding_box
 
@@ -22,18 +23,72 @@ def make_dictionary(annotation_array):
     return annotation_dictionary
 
 
+def dataset_selection():
+    quit = False
+    dataset = 'SemanticKITTI'
+    while not quit:
+        print('Choose dataset:')
+        print('1 - SemanticKITTI')
+        print('2 - Waymo')
+        tmp = input()
+        if tmp == '1' or tmp == '2':
+            quit = True
+            if tmp == '1':
+                dataset = 'SemanticKITTI'
+            else:
+                dataset = 'Waymo'
+        else:
+            print('Wrong input try again')
+
+    sequence = None
+    if dataset == 'SemanticKITTI':
+        print('SemanticKITTI was chosen')
+        if MAC:
+            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{sequence:02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+        else:
+            with open('../config/semantic-kitti.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{sequence:02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+    elif dataset == 'Waymo':
+        print('Waymo was chosen')
+        if MAC:
+            with open('../config/waymo-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+        else:
+            with open('../config/waymo.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+    return config, dataset_functions, sequence
+
+
 if __name__ == '__main__':
 
-    if not os.path.exists('../config/semantic-kitti-mac.yaml'):
-        MAC = False
-
-    if MAC:
-        with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-            config = yaml.safe_load(file)
-
-    else:
-        with open('../config/semantic-kitti.yaml', 'r') as file:
-            config = yaml.safe_load(file)
+    config, _, _ = dataset_selection()
 
     save_path = config['path']['bbox_path']
     data_path = config['path']['dataset_path']
@@ -48,26 +103,35 @@ if __name__ == '__main__':
 
     for c in classes:
         cl = config['labels'][c]
+        print(cl)
         for i in range(100):
+            print(f'\r {i:3d}', end='')
             sample_adresses = glob.glob(f'{save_path}/{cl}/*_{i:03d}_m.npz')
 
             if len(sample_adresses) == 0:
                 continue
 
-            sum = 0
+            sum = np.zeros(360)
+            number = np.zeros(360)
             for sample in sample_adresses:
 
                 sample_data = np.load(sample, allow_pickle=True)
 
-                sum += len(sample_data['pcl'])
+                rotation = int(np.rad2deg(float(str(sample_data['anno']).split(' ')[7])) + 180)
 
-            avg = sum/len(sample_adresses)
+                sum[rotation] += len(sample_data['pcl'])
+                number[rotation] += 1
+
+            avg = np.where(number != 0, sum/number, np.inf)
 
             for sample in sample_adresses:
 
                 sample_data = np.load(sample, allow_pickle=True)
 
-                if avg > len(sample_data['pcl']):
+                rotation = int(np.rad2deg(float(str(sample_data['anno']).split(' ')[7])) + 180)
+
+                if avg[rotation] > len(sample_data['pcl']):
                     os.remove(f'{sample}')
+
 
 
