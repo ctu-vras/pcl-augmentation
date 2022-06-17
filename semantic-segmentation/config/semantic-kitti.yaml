@@ -1,4 +1,4 @@
-# This file is covered by the LICENSE file in the root of this project.
+# Extended config from Semantic-KITTI
 path:
   dataset_path : ""
   maps_path : ""
