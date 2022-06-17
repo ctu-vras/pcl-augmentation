@@ -32,17 +32,16 @@ insertion:
     7: "P"
 
 labels:
-  # Bicyclist, Construction Cone, Bicycle, Motorcycle,
-  0 : "undefined" #?
+  0 : "undefined"
   1 : "car"
-  2 : "other-vehicle" # Other Vehicle (trailer)
+  2 : "other-vehicle"
   3 : "bus"
-  4 : "truck" #? Bagr
+  4 : "truck"
   5 : "motorcyclist"
-  6 : "bicyclist" # kolobezkq!!!!!! WTF?
+  6 : "bicyclist"
   7 : "pedestrian"
   8 : "sign"
-  9 : "traffic_light" #?
+  9 : "traffic_light"
   10: "pole"
   14: "building"
   15: "vegetation"
@@ -50,8 +49,8 @@ labels:
   17: "curb"
   18: "road"
   19: "lane_marker"
-  20: "walkable" # crosswalk
-  21: "other_ground" #?
+  20: "walkable"
+  21: "other_ground"
   22: "sidewalk"
 
 color_map: # bgr
@@ -76,25 +75,3 @@ color_map: # bgr
   20: [100, 0, 100]
   21: [75, 0, 175]
   22: [75, 0, 75]
-  # TMP END
-  48: [75, 0, 75]
-  49: [75, 0, 175]
-  50: [0, 200, 255]
-  51: [50, 120, 255]
-  52: [0, 150, 255]
-  60: [170, 255, 150]
-  70: [0, 175, 0]
-  71: [0, 60, 135]
-  72: [80, 240, 150]
-  80: [150, 240, 255]
-  81: [0, 0, 255]
-  99: [255, 255, 50]
-  252: [245, 150, 100]
-  256: [255, 0, 0]
-  253: [200, 40, 255]
-  254: [30, 30, 255]
-  255: [90, 30, 150]
-  257: [250, 80, 100]
-  258: [180, 30, 80]
-  259: [255, 0, 0]
-  260: [255, 255, 255]
