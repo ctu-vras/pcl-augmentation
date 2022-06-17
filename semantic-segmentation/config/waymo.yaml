@@ -1,10 +1,10 @@
 # This file is covered by the LICENSE file in the root of this project.
 path:
-  dataset_path : "/datagrid/personal/vacekpa2/students/waymo-training"
-  maps_path : "/datagrid/personal/vacekpa2/students/waymo-aug/maps/small/npz"
-  annotation_path : "/datagrid/personal/vacekpa2/students/waymo-aug/orig_format"
-  bbox_path : "/datagrid/personal/vacekpa2/students/waymo-aug/cut_objects"
-  output_path : "/datagrid/personal/vacekpa2/students/waymo-aug"
+  dataset_path : ""
+  maps_path : ""
+  annotation_path : ""
+  bbox_path : ""
+  output_path : ""
 insertion:
   classes : [5, 6, 7]
   min_points :
@@ -98,14 +98,3 @@ color_map: # bgr
   258: [180, 30, 80]
   259: [255, 0, 0]
   260: [255, 255, 255]
-split: # sequence numbers
-  skip:
-    - ""
-#    - "11119453952284076633_1369_940_1389_940"
-#    - "7643597152739318064_3979_000_3999_000"
-#    - "5121298817582693383_4882_000_4902_000"
-#    - "6799055159715949496_2503_000_2523_000"
-#    - "11076364019363412893_1711_000_1731_000"
-#    - "4277109506993614243_1648_000_1668_000"
-#    - "4392459808686681511_5006_200_5026_200"
-#    - "7940496892864900543_4783_540_4803_540"
