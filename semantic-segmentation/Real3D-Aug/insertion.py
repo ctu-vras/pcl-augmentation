@@ -12,6 +12,7 @@ import time
 from tools.closing import *
 from tools.find_spot import *
 from tools.cut_bbox import separate_bbox
+from tools.datasets import *
 
 DEBUG = False
 
@@ -62,23 +63,6 @@ def add_space_for_spherical(point_cloud):
     out[:, 0:3] = point_cloud[:, 0:3]    # x, y, z
     out[:, 6:8] = point_cloud[:, 3:5]    # intensity, label
     return out  # x, y, z, r, azimuth, elevation, intensity, label, FOV-index
-
-
-def remove_space_for_spherical(point_cloud):
-    '''
-
-    :param point_cloud: point-cloud as 2D numpy array with space for spherical coordination
-    (format of add_space_for_spherical output)
-    :return: point-cloud as 2D numpy array (N x 4). Where N is number of points.
-    Columns are ordered x, y, z. intensity
-    '''
-    points_num = len(point_cloud)
-    labels = np.zeros((points_num, 1))
-    pcl = np.ones((points_num, 4))*-1
-    pcl[:, 0:3] = point_cloud[:, 0:3]   # X, Y, Z
-    pcl[:, 3] = point_cloud[:, 6]       # Intensity
-    labels[:, 0] = point_cloud[:, 7]
-    return pcl, labels
 
 
 def fill_spherical(point_cloud):
@@ -147,6 +131,10 @@ def geometrical_front_view(point_cloud, num_row, num_column, max_elevation_angle
 
 
 def extract_anno(anno_path):
+    """
+    :param anno_path: address of annotation txt file
+    :return: list of annotation directories
+    """
     output_list = np.array([])
     txt_file = open(anno_path, 'r')
 
@@ -167,181 +155,6 @@ def extract_anno(anno_path):
 
     txt_file.close()
     return output_list
-
-
-# def color_placement_area(point_cloud, map_data):
-#     map = map_data['map']
-#     map_move = np.array([map_data['min_x'], map_data['min_y']])
-#
-#     for i in range(len(point_cloud)):
-#         position_x = point_cloud[i][0] - map_move[0]
-#         position_y = point_cloud[i][1] - map_move[1]
-#         if map[int(position_x)][int(position_y)] == 1:
-#             point_cloud[i][7] = 2
-#         else:
-#             point_cloud[i][7] = 0
-#
-#     return point_cloud
-
-
-def create_read_me(save_folder, config):
-    txt = open(f'{save_folder}/setting.txt', 'w')
-    txt.write(f'Inserted classes:\n')
-
-    if config['insertion']['random']:
-        for c in config['insertion']['classes']:
-            txt.write('     ' + config['labels'][c] + '\n')
-        txt.write('Randomly inserted '+ str(config['insertion']['number_of_object']) + ' objects\n')
-    else:
-        for c in range(len(config['insertion']['classes'])):
-            txt.write('     '+ str(config['insertion']['number_of_classes'][c])+'x   ' + config['labels'][config['insertion']['classes'][c]] + '\n')
-    txt.close()
-
-
-def create_directories(save_folder, config):
-    folder_number = 0
-
-    save_output_folder = config['path']['output_path']
-
-    if not os.path.exists(f'{save_output_folder}/{save_folder}'):
-        os.mkdir(f'{save_output_folder}/{save_folder}')
-
-    if os.path.exists(f'{save_output_folder}/{save_folder}/{folder_number:02d}'):
-        print(f'Default save folder is already existing do you want change name? [yes/no]')
-        quit = False
-        while not quit:
-            choice = input()
-            if choice == 'yes':
-                quit1 = False
-                while not quit1:
-                    print(f'Write name of the save folder.')
-                    folder_number = input()
-                    try:
-                        folder_number = int(folder_number)
-
-                        if not 0 <= folder_number <= 99:
-                            print(f'Input must be number between 0 and 99')
-                            continue
-                    except:
-                        print(f'Input must be number between 0 and 99')
-                        continue
-                    print(f'Is this what you want: \'{folder_number:02d}\'? [yes/no]')
-                    choice = input()
-
-                    if choice == 'yes':
-                        quit = True
-                        quit1 = True
-                        if not os.path.exists(f'{save_output_folder}/{save_folder}/{folder_number:02d}'):
-                            os.mkdir(f'{save_output_folder}/{save_folder}/{folder_number:02d}')
-
-            elif choice == 'no':
-                quit = True
-
-            else:
-                print(f'Wrong input. Try again.')
-
-    else:
-        os.mkdir(f'{save_output_folder}/{save_folder}/{folder_number:02d}')
-
-    save_folder = f'{save_folder}/{folder_number:02d}'
-
-    if not os.path.exists(f'{save_output_folder}/{save_folder}/sequences'):
-        os.mkdir(f'{save_output_folder}/{save_folder}/sequences')
-
-    save_folder = f'{save_folder}/sequences'
-
-    create_read_me(f'{save_output_folder}/{save_folder}', config)
-
-    for s in config['split']['train']:
-
-        if not os.path.exists(f'{save_output_folder}/{save_folder}/{s:02d}'):
-            os.mkdir(f'{save_output_folder}/{save_folder}/{s:02d}')
-
-        if not os.path.exists(f'{save_output_folder}/{save_folder}/{s:02d}/velodyne'):
-            os.mkdir(f'{save_output_folder}/{save_folder}/{s:02d}/velodyne')
-
-        if not os.path.exists(f'{save_output_folder}/{save_folder}/{s:02d}/check'):
-            os.mkdir(f'{save_output_folder}/{save_folder}/{s:02d}/check')
-
-        if not os.path.exists(f'{save_output_folder}/{save_folder}/{s:02d}/labels'):
-            os.mkdir(f'{save_output_folder}/{save_folder}/{s:02d}/labels')
-
-        if not os.path.exists(f'{save_output_folder}/{save_folder}/{s:02d}/added_objects'):
-            os.mkdir(f'{save_output_folder}/{save_folder}/{s:02d}/added_objects')
-
-    return save_folder, folder_number
-
-
-def create_velodyne_list(config):
-    quit = False
-    skip_scenes = 0
-    sequence = 0
-    order = False
-
-    while not quit:
-        print(f'Choose sequence:')
-        tmp = input()
-        try:
-            tmp = int(tmp)
-            if tmp in config['split']['train']:
-                sequence = tmp
-                quit = True
-            else:
-                print(f'Sequence is not in training part of dataset')
-        except:
-            print(f'Wrong input try again.')
-    quit = False
-
-    while not quit:
-        print(f'Do you want to reverse order of making scenes?[yes/no] or skip scene?[0;7000] (1/4 = 1842; 1/2 = 3699)')
-        tmp = input()
-        if tmp == 'no':
-            quit = True
-            order = False
-        elif tmp == 'yes':
-            quit = True
-            order = True
-        else:
-            try:
-                tmp = int(tmp)
-                skip_scenes = tmp
-                print(f'Skiping scenes lower then {skip_scenes}')
-                quit = True
-            except:
-                print(f'Wrong input try again.')
-
-    data_path = config['path']['dataset_path']
-
-    velodyne_address = np.array(glob.glob(f'{data_path}/sequences/{sequence:02d}/velodyne/*.bin'))
-
-    velodyne_address.sort()
-
-    velodyne_address = velodyne_address[skip_scenes:]
-
-    if order:
-        velodyne_address = velodyne_address[::-1]
-
-    return sequence, velodyne_address
-
-
-def save_data(point_cloud, added_points, folder, name, config):
-    point_cloud, pcl_labels = remove_space_for_spherical(point_cloud)
-    added_points, added_labels = remove_space_for_spherical(added_points)
-    added_points = np.hstack((added_points, added_labels))
-
-    save_output_folder = config['path']['output_path']
-
-    ## SAVING PCL TO .BIN
-    save_file = open(f'{save_output_folder}/{folder}/velodyne/{name}.bin', 'wb')
-    save_file.write(point_cloud.astype(np.float32))
-    save_file.close()
-    save_labels = open(f'{save_output_folder}/{folder}/labels/{name}.label', 'wb')
-    save_labels.write(pcl_labels.astype(np.uint32))
-    save_labels.close()
-
-    check_file = open(f'{save_output_folder}/{folder}/check/{name}.bin', 'wb')
-    check_file.write(added_points.astype(np.float32))
-    check_file.close()
 
 
 def check_covers(annotation, covered_scene):
@@ -374,23 +187,6 @@ def generate_seed(config):
     return seed, inserted_class
 
 
-def create_transform_matrix(poses, frame_number):
-    pose = poses[frame_number].reshape(3,4)
-    pose = np.vstack((pose, np.array([0, 0, 0, 1])))
-
-    velo_2_cam = np.array([[7.533745e-03, -9.999714e-01, -6.166020e-04, -4.069766e-03],
-                           [1.480249e-02, 7.280733e-04, -9.998902e-01, -7.631618e-02],
-                           [9.998621e-01, 7.523790e-03, 1.480755e-02, -2.717806e-01],
-                           [0, 0, 0, 1]])
-    my_calib = np.array([[0, -1, 0, 0],
-                         [0, 0, -1, 0],
-                         [1, 0, 0, 0],
-                         [0, 0, 0, 1]])
-
-    transform_matrix = np.dot(pose, velo_2_cam)
-    return np.dot(np.linalg.inv(my_calib), transform_matrix)
-
-
 def print_status(remaining_objects, config, current_object, frame_name, f_n):
     print(f'Status: {frame_name} for {f_n}')
     classes = config['insertion']['classes']
@@ -402,23 +198,6 @@ def print_status(remaining_objects, config, current_object, frame_name, f_n):
             print(f'{YELLOW} {remaining_objects[i]} {names[classes[i]]} remaining.{DEFAULT}')
         else:
             print(f'{RED} {remaining_objects[i]} {names[classes[i]]} remaining.{DEFAULT}')
-
-
-# def addjust_map(map_data, point_cloud, transformation_matrix):
-#     # driveable area map
-#     map = map_data['map']
-#     map_move = map_data['move']
-#
-#     for point in point_cloud:
-#         if point[7] in ROAD_INDEXES or point[2] > 1.5:
-#             continue
-#         x = np.array([[point[0]], [point[1]], [point[2]], [1.]])
-#         global_position = np.dot(transformation_matrix, x)
-#         global_position = global_position - map_move
-#         if map[int(global_position[0][0])][int(global_position[1][0])] != 0:
-#             map[int(global_position[0][0])][int(global_position[1][0])] = 4
-#
-#     return map, map_move
 
 
 def addjust_map_2(map_data, point_cloud, transformation_matrix):
@@ -446,15 +225,72 @@ def addjust_map_2(map_data, point_cloud, transformation_matrix):
     return map, map_move
 
 
+def dataset_selection():
+    quit = False
+    dataset = 'SemanticKITTI'
+    while not quit:
+        print('Choose dataset:')
+        print('1 - SemanticKITTI')
+        print('2 - Waymo')
+        tmp = input()
+        if tmp == '1' or tmp == '2':
+            quit = True
+            if tmp == '1':
+                dataset = 'SemanticKITTI'
+            else:
+                dataset = 'Waymo'
+        else:
+            print('Wrong input try again')
+
+    sequence = None
+    if dataset == 'SemanticKITTI':
+        print('SemanticKITTI was chosen')
+        if MAC:
+            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{int(sequence):02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+        else:
+            with open('../config/semantic-kitti.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+
+                quit = False
+                while not quit:
+                    print('Choose sequence')
+                    sequence = input()
+                    if int(sequence) in config['split']['train']:
+                        quit = True
+                        sequence = f'{int(sequence):02d}'
+
+                dataset_functions = SemanticKITTI(config, sequence)
+
+    elif dataset == 'Waymo':
+        print('Waymo was chosen')
+        if MAC:
+            with open('../config/waymo-mac.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+        else:
+            with open('../config/waymo.yaml', 'r') as file:
+                config = yaml.safe_load(file)
+                dataset_functions = Waymo(config)
+
+    return config, dataset_functions, sequence
+
+
 if __name__ == '__main__':
 
-    if MAC:
-        with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-            config = yaml.safe_load(file)
-
-    else:
-        with open('../config/semantic-kitti.yaml', 'r') as file:
-            config = yaml.safe_load(file)
+    config, dataset_functions, sequence = dataset_selection()
 
     if config['insertion']['random']:
         save_folder = 'random'
@@ -466,382 +302,311 @@ if __name__ == '__main__':
     anno_path = config['path']['annotation_path']
     sample_path = config['path']['bbox_path']
 
-    save_folder, f_n = create_directories(save_folder, config)
+    save_folder, f_n = dataset_functions.create_directories(save_folder)
 
-    sequence, velodyne_list = create_velodyne_list(config)
+    sequence = dataset_functions.sequence
 
-    save_folder = f'{save_folder}/{sequence:02d}'
-
-    poses = np.loadtxt(f'{data_path}/sequences/{sequence:02d}/poses.txt')
-
-    quit = False
+    save_folder = f'{save_folder}/{sequence}'
 
     add_objects_txt_open = False
 
     maps_path = config['path']['maps_path']
-    maps_data = np.load(f'{maps_path}/{sequence:02d}.npz', allow_pickle=True)
+    maps_data = np.load(f'{maps_path}/{sequence}.npz', allow_pickle=True)
 
-    while not quit:
+    pcl_idx = 0
 
-        quit = True
+    while len(dataset_functions) > 0:
 
-        for file in velodyne_list:
-            if file.endswith(f'.bin'):
+        if sequence != dataset_functions.sequence:      # if it is new sequence load appropriate rich map
+            sequence = dataset_functions.sequence
+            save_folder = save_folder.split('/')
+            save_folder[-1] = sequence
+            save_folder = '/'.join(save_folder)
+            maps_path = config['path']['maps_path']
+            maps_data = np.load(f'{maps_path}/{sequence}.npz', allow_pickle=True)
 
-                # start = time.time()
+        ## Just for print
 
-                remaining_objects, inserted_class = generate_seed(config)
+        file = dataset_functions.velodyne_list[pcl_idx]
 
-                frame_name = file.split('/')[-1].split('.')[0]
+        remaining_objects, inserted_class = generate_seed(config)
 
-                print(f'{sequence:02d}/{frame_name}')
+        frame_name = file.split('/')[-1].split('.')[0]
 
-                if os.path.exists(f'{save_output_folder}/{save_folder}/velodyne/{frame_name}.bin'):
-                    print(f'Already done')
-                    continue
+        print(f'{sequence}/{frame_name}')
 
-                if add_objects_txt_open:
-                    add_objects_name.close()
-                    add_objects_txt_open = False
+        ##
 
-                assert not add_objects_txt_open, f'Previous txt file for name of added objects was not closed'
+        if os.path.exists(f'{save_output_folder}/{save_folder}/added_objects/{frame_name}.txt'): # check if scene is done or in progress
+            print(f'Already in progress')
+            dataset_functions.delete_item(pcl_idx)
+            continue
 
-                add_objects_name = open(f'{save_output_folder}/{save_folder}/added_objects/n{frame_name}.txt', 'w')
-                add_objects_txt_open = True
+        if add_objects_txt_open:
+            add_objects_name.close()
+            add_objects_txt_open = False
 
-                #### SCENE POINT CLOUD
-                # original point cloud
-                scene_pcl = np.fromfile(file, dtype=np.float32).reshape(-1, 4)
-                semantic_labels = np.fromfile(f'{data_path}/sequences/{sequence:02d}/labels/{frame_name}.label', dtype=np.uint32).reshape(-1, 1)
-                semantic_labels = semantic_labels & 0xFFFF
-                scene_pcl = np.hstack((scene_pcl, semantic_labels))
+        assert not add_objects_txt_open, f'Previous txt file for name of added objects was not closed'
 
-                transform_matrix = create_transform_matrix(poses, int(frame_name))
+        add_objects_name = open(f'{save_output_folder}/{save_folder}/added_objects/{frame_name}.txt', 'w') # txt file of added objects
+        add_objects_txt_open = True
 
-                original_pcl = copy.deepcopy(scene_pcl)
+        #### SCENE POINT CLOUD
+        # original point cloud
+        scene_pcl, transform_matrix, anno_location, _, _ = dataset_functions[pcl_idx]   # loading scene data
 
-                scene_annotation = extract_anno(f'{anno_path}/sequences/{sequence:02d}/bbox/{frame_name}.txt')
+        original_pcl = copy.deepcopy(scene_pcl)
 
-                ### SCENE FIELD OF VIEW (smooth)
-                scene_pcl = add_space_for_spherical(scene_pcl)
+        scene_annotation = extract_anno(f'{anno_location}')  # creating list of annotation dictionaries from txt file
 
-                all_visible_parts = []
-                some_object_inserted = False
-                SAMPLE_TIMEOUT = False
-                saved = False
+        ### SCENE FIELD OF VIEW (smooth)
+        scene_pcl = add_space_for_spherical(scene_pcl)
 
-                unplaceble_samples = []
+        all_visible_parts = []
+        some_object_inserted = False
+        SAMPLE_TIMEOUT = False
+        saved = False
 
-                # end = time.time()
-                #
-                # print(f'1 time = {end - start:.02f}s')
+        unplaceble_samples = []
 
-                while np.max(remaining_objects) > 0:
+        while np.max(remaining_objects) > 0:    # while some object still need to be added
 
-                    # start = time.time()
+            scene_pcl, max_elevation, min_elevation = fill_spherical(scene_pcl)     # compute spherical coordination
 
-                    scene_pcl, max_elevation, min_elevation = fill_spherical(scene_pcl)
+            scene_train, scene_label, scene_pcl = geometrical_front_view(scene_pcl, NUMROW, NUMCOLUMN, max_elevation, min_elevation)
 
-                    # end = time.time()
-                    #
-                    # print(f'fill_spherical = {end - start:.02f}s')
-                    #
-                    # start = time.time()
+            scene_train, scene_label = smooth_out(scene_train, scene_label)         # apply closing to FoV
 
-                    scene_train, scene_label, scene_pcl = geometrical_front_view(scene_pcl, NUMROW, NUMCOLUMN, max_elevation, min_elevation)
+            map, map_move = addjust_map_2(maps_data, scene_pcl, transform_matrix)   # mark occupied places in map (by any scene objects)
 
-                    # end = time.time()
-                    #
-                    # print(f'geometrical_FOV = {end - start:.02f}s')
-                    #
-                    # start = time.time()
+            scene_pcl_backup = copy.deepcopy(scene_pcl)
 
-                    scene_train, scene_label = smooth_out(scene_train, scene_label)
+            ### SAMPLE POINT CLOUD
+            for i in range(len(remaining_objects)):     # looking for class of next placed object
+                if remaining_objects[i] > 0:
+                    if inserted_class != config['insertion']['classes'][i]:
+                        SAMPLE_TIMEOUT = False
+                    inserted_class = config['insertion']['classes'][i]
+                    sample_folder = config['labels'][inserted_class]
+                    break
 
-                    # end = time.time()
-                    #
-                    # print(f'smooth = {end - start:.02f}s')
-                    #
-                    # start = time.time()
+            sample_directory_list = glob.glob(f'{sample_path}/{sample_folder}/*.npz')
 
-                    map, map_move = addjust_map_2(maps_data, scene_pcl, transform_matrix)
+            match_find = False
 
-                    # end = time.time()
-                    #
-                    # print(f'map = {end - start:.02f}s')
-                    #
-                    # start = time.time()
-                    ###
-                    # if DEBUG:
-                    #     tmp_label = copy.deepcopy(scene_label)
-                    #     for r in range(NUMROW):
-                    #         for c in range(NUMCOLUMN):
-                    #             if tmp_label[r][c] == -1:
-                    #                 tmp_label[r][c] = 0
-                    #             else:
-                    #                 tmp_label[r][c] = 1
-                    #     create_image(tmp_label, 'output/smooth_scene.png')
+            while not match_find:
 
-                    scene_pcl_backup = copy.deepcopy(scene_pcl)
+                if not SAMPLE_TIMEOUT:  # shuffle samples in order to add random one
+                    random.shuffle(sample_directory_list)
+                    start_index = 0
+                    end_index = MAX_NUM_TRIES
+                else:   # in order to skip already tried samples (which was unplaceable)
+                    start_index += MAX_NUM_TRIES
+                    end_index += MAX_NUM_TRIES
+                    if end_index > len(sample_directory_list):
+                        end_index = len(sample_directory_list)
 
-                    ### SAMPLE POINT CLOUD
-                    for i in range(len(remaining_objects)):
-                        if remaining_objects[i] > 0:
-                            if inserted_class != config['insertion']['classes'][i]:
-                                SAMPLE_TIMEOUT = False
-                            inserted_class = config['insertion']['classes'][i]
-                            sample_folder = config['labels'][inserted_class]
-                            break
+                for s_index in range(start_index, end_index):
+                    sample_file = sample_directory_list[s_index]
 
-                    sample_directory_list = glob.glob(f'{sample_path}/{sample_folder}/*.npz')
+                    if match_find:  # previous sample was added
+                        break
 
-                    match_find = False
+                    if sample_file.endswith('.npz'):
 
-                    # end = time.time()
-                    #
-                    # print(f'2 time = {end - start:.02f}s')
+                        # just for print
+                        object_name = sample_file.split('/')[-1].split('.')[0]
+                        print(f'\r{object_name}. Try number: {s_index}')
+                        #
 
-                    while not match_find:
-
-                        # start = time.time()
-
-                        if not SAMPLE_TIMEOUT:
-                            random.shuffle(sample_directory_list)
-                            start_index = 0
-                            end_index = MAX_NUM_TRIES
-                        else:
-                            start_index += MAX_NUM_TRIES
-                            end_index += MAX_NUM_TRIES
-                            if end_index > len(sample_directory_list):
-                                end_index = len(sample_directory_list)
-
-                        for s_index in range(start_index, end_index):
-                            sample_file = sample_directory_list[s_index]
-
-                            if match_find:
+                        if object_name in unplaceble_samples:
+                            print(f'Object was previously unplaceble.')
+                            if s_index == end_index-1:
+                                remaining_objects[config['insertion']['classes'].index(inserted_class)] -= 1
+                                match_find = True
                                 break
+                            continue
 
-                            if sample_file.endswith('.npz'):
+                        unplaceble = True
 
-                                # end = time.time()
-                                #
-                                # print(f'3 time = {end - start:.02f}s')
+                        sample_data = np.load(sample_file, allow_pickle=True) # loading sample data
 
-                                ### LOADING SAMPLE POINT CLOUD
-                                object_name = sample_file.split('/')[-1].split('.')[0]
-                                print(f'{object_name}. Try number: {s_index}')
+                        possible_sample_pcl, possible_sample_annotation, possible_rotation = find_possible_places(scene_pcl,
+                                                                                    scene_annotation, sample_data, map, map_move, original_pcl, transform_matrix, config)
 
-                                if object_name in unplaceble_samples:
-                                    print(f'Object was previously unplaceble.')
-                                    if s_index == end_index-1:
-                                        remaining_objects[config['insertion']['classes'].index(inserted_class)] -= 1
-                                        match_find = True
-                                        break
-                                    continue
+                        if DEBUG:
+                            tmp = copy.deepcopy(scene_pcl)
+                            tmp[:, 7] = 0
+                            visualization(np.append(tmp, np.array([[1.5, 0, 1.7, 0, 0, 0, 0, 6, 0]]), axis=0))
+                            tmp = copy.deepcopy(scene_pcl)
+                            for i in range(len(tmp)):
+                                if tmp[i][7] == 18 or tmp[i][7] == 19:
+                                    tmp[i][7] = 0
+                                elif tmp[i][7] == 20:
+                                    tmp[i][7] = 2
+                                elif tmp[i][7] == 21:
+                                    tmp[i][7] = 3
+                                else:
+                                    tmp[i][7] = 6
+                            for tmp1 in possible_sample_pcl:
+                                tmp1[:, 4] = 1
+                                tmp = np.append(tmp, add_space_for_spherical(tmp1), axis=0)
+                            visualization(tmp)
 
-                                unplaceble = True
+                        if len(possible_sample_pcl) == 0 and unplaceble:
+                            unplaceble_samples.append(object_name)
+                            print(f'\rObject: {object_name} was added to unplaceble list')
 
-                                sample_data = np.load(sample_file, allow_pickle=True)
+                        for sample_index in range(len(possible_sample_pcl)):    # computing occlustions for all possible placements
+                            sample_pcl = possible_sample_pcl[sample_index]
+                            sample_annotation = possible_sample_annotation[sample_index]
+                            sample_rotation = possible_rotation[sample_index]
+                            scene_pcl = copy.deepcopy(scene_pcl_backup)
 
-                                possible_sample_pcl, possible_sample_annotation, possible_rotation = find_possible_places(scene_pcl,
-                                                                                            scene_annotation, sample_data, map, map_move, original_pcl, transform_matrix, config)
+                            sample_pcl = add_space_for_spherical(sample_pcl)
 
-                                if DEBUG:
-                                    tmp = copy.deepcopy(scene_pcl)
-                                    for i in range(len(tmp)):
-                                        if tmp[i][7] == 40:
-                                            tmp[i][7] = 0
-                                        elif tmp[i][7] == 44:
-                                            tmp[i][7] = 2
-                                        elif tmp[i][7] == 48:
-                                            tmp[i][7] = 3
-                                        else:
-                                            tmp[i][7] = 6
-                                    for tmp1 in possible_sample_pcl:
-                                        tmp1[:, 4] = 1
-                                        tmp = np.append(tmp, add_space_for_spherical(tmp1), axis=0)
-                                    visualization(tmp)
+                            sample_pcl, _, _ = fill_spherical(sample_pcl)
 
-                                if len(possible_sample_pcl) == 0 and unplaceble:
-                                    unplaceble_samples.append(object_name)
-                                    print(f'Object: {object_name} was added to unplaceble list')
+                            sample_train, sample_label, sample_pcl = geometrical_front_view(sample_pcl, NUMROW, NUMCOLUMN, max_elevation, min_elevation, sample=True)
 
-                                for sample_index in range(len(possible_sample_pcl)):
-                                    sample_pcl = possible_sample_pcl[sample_index]
-                                    sample_annotation = possible_sample_annotation[sample_index]
-                                    sample_rotation = possible_rotation[sample_index]
-                                    scene_pcl = copy.deepcopy(scene_pcl_backup)
+                            sample_train, sample_label = smooth_out(sample_train, sample_label)
 
-                                    # original_len_of_sample = len(sample_pcl)
+                            first_part = True
+                            visible_sample = np.array([])
+                            covered_scene = np.array([])
 
-                                    # if len(sample_pcl) < MINIMAL_OBJECT_POINTS:
-                                    #     if sample_index == len(possible_sample_pcl) - 1 and unplaceble:
-                                    #         unplaceble_samples.append(object_name)
-                                    #         print(f'Object: {object_name} was added to unplaceble list')
-                                    #     continue
+                            indexes = np.where(sample_train < scene_train)  # pixels where sample wold be visible
 
-                                    sample_pcl = add_space_for_spherical(sample_pcl)
+                            for ind in range(len(indexes[0])):
+                                covered_part = scene_pcl[
+                                    scene_pcl[:, 8] == indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # points in coved pixel
+                                scene_pcl = scene_pcl[
+                                    scene_pcl[:, 8] != indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # all points without covered pixel
+                                visible_part = sample_pcl[
+                                    sample_pcl[:, 8] == indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # sample points in pixel
+                                if first_part:
+                                    first_part = False
+                                    visible_sample = visible_part
+                                    covered_scene = covered_part
+                                else:
+                                    visible_sample = np.append(visible_sample, visible_part, axis=0)
+                                    covered_scene = np.append(covered_scene, covered_part, axis=0)
 
-                                    sample_pcl, _, _ = fill_spherical(sample_pcl)
+                            if DEBUG:
+                                tmp = copy.deepcopy(scene_pcl)
+                                tmp[:, 7] = 0
+                                tmp = np.append(tmp, visible_sample, axis=0)
+                                visualization(tmp)
+                                tmp = copy.deepcopy(scene_pcl)
+                                tmp[:, 7] = 1
+                                _, tmp_label, _ = geometrical_front_view(tmp, NUMROW, NUMCOLUMN, max_elevation,
+                                                                         min_elevation)
+                                for r in range(NUMROW):
+                                    for c in range(NUMCOLUMN):
+                                        if tmp_label[r][c] == -1:
+                                            tmp_label[r][c] = 0
+                                create_image(tmp_label, 'scene_FoV.png')
 
-                                    sample_train, sample_label, sample_pcl = geometrical_front_view(sample_pcl, NUMROW, NUMCOLUMN, max_elevation, min_elevation, sample=True)
+                                tmp = copy.deepcopy(visible_sample)
+                                tmp[:, 7] = 1
+                                _, tmp_label, _ = geometrical_front_view(tmp, NUMROW, NUMCOLUMN, max_elevation,
+                                                                         min_elevation)
+                                for r in range(NUMROW):
+                                    for c in range(NUMCOLUMN):
+                                        if tmp_label[r][c] == -1:
+                                            tmp_label[r][c] = 0
+                                create_image(tmp_label, 'sample_FoV.png')
 
-                                    sample_train, sample_label = smooth_out(sample_train, sample_label)
+                            assert int(sample_annotation['class'][0]) == inserted_class, f'Inserted class does not match'
 
-                                    first_part = True
-                                    visible_sample = np.array([])
-                                    covered_scene = np.array([])
+                            if len(visible_sample) == 0:
+                                print(f'\r{RED}No visible part of {config["labels"][inserted_class]}{DEFAULT} with rotation: {sample_rotation}', end='')
 
-                                    # for row in range(NUMROW):
-                                    #     for column in range(NUMCOLUMN):
-                                    #         if sample_label[row][column] == 1:
-                                    #             if scene_train[row][column][0] > sample_train[row][column][0] or scene_label[row][column] == -1:
-                                    #                 covered_part = scene_pcl[scene_pcl[:, 8] == row * NUMCOLUMN + column]   # points in coved pixel
-                                    #                 scene_pcl = scene_pcl[scene_pcl[:, 8] != row * NUMCOLUMN + column]      # all without covered pixel
-                                    #                 visible_part = sample_pcl[sample_pcl[:, 8] == row * NUMCOLUMN + column] # sample points in pixel
-                                    #                 if first_part:
-                                    #                     first_part = False
-                                    #                     visible_sample = visible_part
-                                    #                     covered_scene = covered_part
-                                    #                 else:
-                                    #                     visible_sample = np.append(visible_sample, visible_part, axis=0)
-                                    #                     covered_scene = np.append(covered_scene, covered_part, axis=0)
+                            elif len(visible_sample) < config['insertion']['min_points'][inserted_class]:
+                                print(f'\rIt is visible just {YELLOW}{len(visible_sample)}{DEFAULT} points from {config["labels"][inserted_class]} with rotation: {sample_rotation}. It could be hard case. We try another one.', end='')
 
-                                    indexes = np.where(sample_train < scene_train)
+                            else:
+                                add_objects_name.write(f'{object_name} with rotation: {sample_rotation}\n')
+                                print(f'\rIt is visible {GREEN}{len(visible_sample)}{DEFAULT} points from {config["labels"][inserted_class]}. Moving to another scene')
+                                match_find = True
+                                SAMPLE_TIMEOUT = False
+                                unplaceble = False
 
-                                    for ind in range(len(indexes[0])):
-                                        covered_part = scene_pcl[
-                                            scene_pcl[:, 8] == indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # points in coved pixel
-                                        scene_pcl = scene_pcl[
-                                            scene_pcl[:, 8] != indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # all without covered pixel
-                                        visible_part = sample_pcl[
-                                            sample_pcl[:, 8] == indexes[0][ind] * NUMCOLUMN + indexes[1][ind]]  # sample points in pixel
-                                        if first_part:
-                                            first_part = False
-                                            visible_sample = visible_part
-                                            covered_scene = covered_part
-                                        else:
-                                            visible_sample = np.append(visible_sample, visible_part, axis=0)
-                                            covered_scene = np.append(covered_scene, covered_part, axis=0)
+                                some_object_inserted = True
 
-                                    if DEBUG and False:
-                                        tmp = copy.deepcopy(scene_pcl)
-                                        tmp[:, 7] = 0
-                                        tmp = np.append(tmp, visible_sample, axis=0)
-                                        visualization(tmp)
-                                        tmp = cutout_frame(tmp, img_file, calib_file)
-                                        visualization(tmp)
-                                        tmp = copy.deepcopy(scene_pcl)
-                                        tmp[:, 7] = 1
-                                        _, tmp_label, _ = geometrical_front_view(tmp, NUMROW, NUMCOLUMN, max_elevation, min_elevation)
-                                        for r in range(NUMROW):
-                                            for c in range(NUMCOLUMN):
-                                                if tmp_label[r][c] == -1:
-                                                    tmp_label[r][c] = 0
-                                        create_image(tmp_label, 'output/scene_FoV.png')
+                                scene_pcl = np.append(scene_pcl, visible_sample, axis=0)
 
-                                        tmp = copy.deepcopy(visible_sample)
-                                        tmp[:, 7] = 1
-                                        _, tmp_label, _ = geometrical_front_view(tmp, NUMROW, NUMCOLUMN, max_elevation,
-                                                                                 min_elevation)
-                                        for r in range(NUMROW):
-                                            for c in range(NUMCOLUMN):
-                                                if tmp_label[r][c] == -1:
-                                                    tmp_label[r][c] = 0
-                                        create_image(tmp_label, 'output/sample_FoV.png')
-
-                                    assert int(sample_annotation['class'][0]) == inserted_class, f'Inserted class does not match'
-
-                                    if len(visible_sample) == 0:
-                                        print(f'{RED}No visible part of {inserted_class}{DEFAULT}')
-
-                                    elif len(visible_sample) < config['insertion']['min_points'][inserted_class]:
-                                        print(f'It is visible just {YELLOW}{len(visible_sample)}{DEFAULT} points from {inserted_class}. It could be hard case. We try another one.')
-
-                                    else:
-                                        add_objects_name.write(f'{object_name} with rotation: {sample_rotation}\n')
-                                        print(f'It is visible {GREEN}{len(visible_sample)}{DEFAULT} points from {inserted_class}. Moving to another scene')
-                                        match_find = True
-                                        SAMPLE_TIMEOUT = False
-                                        unplaceble = False
-
-                                        some_object_inserted = True
-
-                                        if DEBUG:
-                                            tmp = copy.deepcopy(scene_pcl)
-                                            tmp[:, 7] = 0
-                                            tmp1 = copy.deepcopy(visible_sample)
-                                            tmp1[:, 7] = 1
-                                            tmp = np.append(tmp, tmp1, axis=0)
-                                            visualization(tmp)
-
-                                        scene_pcl = np.append(scene_pcl, visible_sample, axis=0)
-
-                                        remaining_objects[config['insertion']['classes'].index(inserted_class)] -= 1
-
-                                        print_status(remaining_objects, config, inserted_class, f'{sequence:02d}/{frame_name}', f_n)
-
-                                        if np.max(remaining_objects) > 0:
-                                            scene_annotation = np.append(scene_annotation, [sample_annotation])
-                                            if len(all_visible_parts) == 0:
-                                                all_visible_parts = copy.deepcopy(visible_sample)
-                                            else:
-                                                all_visible_parts = np.append(all_visible_parts, visible_sample, axis=0)
-
-                                            break
-
-                                        else:
-                                            if len(all_visible_parts) == 0:
-                                                all_visible_parts = copy.deepcopy(visible_sample)
-                                            else:
-                                                all_visible_parts = np.append(all_visible_parts, visible_sample, axis=0)
-
-                                            # SAVING DATA
-
-                                            save_data(scene_pcl, all_visible_parts, save_folder, frame_name, config)
-                                            add_objects_name.close()
-                                            add_objects_txt_open = False
-                                            saved = True
-
-                                            break
-
-                                    if sample_index == len(possible_sample_pcl)-1 and unplaceble:
-                                        print(f'Object: {object_name} was added to unplaceble list')
-                                        unplaceble_samples.append(object_name)
-
-                            if (s_index == len(
-                                        sample_directory_list) - 1 or s_index == 3 * MAX_NUM_TRIES) and not match_find:
-                                remaining_objects[config['insertion']['classes'].index(inserted_class)] = 0
-                                print(f'{RED}TOTAL {inserted_class} insertion time-out.{DEFAULT}')
-                                SAMPLE_TIMEOUT = True
-
-                                print_status(remaining_objects, config, inserted_class, f'{sequence:02d}/{frame_name}', f_n)
-
-                            if s_index == end_index-1 and not match_find:
                                 remaining_objects[config['insertion']['classes'].index(inserted_class)] -= 1
 
-                                if remaining_objects[config['insertion']['classes'].index(inserted_class)] <= 0:
-                                    match_find = True
+                                print_status(remaining_objects, config, inserted_class, f'{sequence}/{frame_name}', f_n)
 
-                                print_status(remaining_objects, config, inserted_class, f'{sequence:02d}/{frame_name}', f_n)
+                                if np.max(remaining_objects) > 0:
+                                    scene_annotation = np.append(scene_annotation, [sample_annotation])
+                                    if len(all_visible_parts) == 0:
+                                        all_visible_parts = copy.deepcopy(visible_sample)
+                                    else:
+                                        all_visible_parts = np.append(all_visible_parts, visible_sample, axis=0)
 
-                                if np.max(remaining_objects) <= 0 and some_object_inserted:
+                                    break
+
+                                else:
+                                    if len(all_visible_parts) == 0:
+                                        all_visible_parts = copy.deepcopy(visible_sample)
+                                    else:
+                                        all_visible_parts = np.append(all_visible_parts, visible_sample, axis=0)
 
                                     # SAVING DATA
-                                    save_data(scene_pcl, all_visible_parts, save_folder, frame_name, config)
+
+                                    dataset_functions.save_data(scene_pcl, all_visible_parts, save_folder, frame_name, pcl_idx)
                                     add_objects_name.close()
                                     add_objects_txt_open = False
                                     saved = True
-                                    match_find = True
 
-                                quit = False
-                                break
+                                    break
 
-                if some_object_inserted and not saved:
+                            if sample_index == len(possible_sample_pcl)-1 and unplaceble:
+                                print(f'\rObject: {object_name} was added to unplaceble list')
+                                unplaceble_samples.append(object_name)
 
-                    save_data(scene_pcl, all_visible_parts, save_folder, frame_name, config)
-                    add_objects_name.close()
-                    add_objects_txt_open = False
-                    saved = True
+                    if (s_index == len(
+                                sample_directory_list) - 1 or s_index == 3 * MAX_NUM_TRIES) and not match_find:
+                        remaining_objects[config['insertion']['classes'].index(inserted_class)] = 0
+                        print(f'{RED}TOTAL {inserted_class} insertion time-out.{DEFAULT}')
+                        SAMPLE_TIMEOUT = True
 
-                assert not (some_object_inserted and not saved), f'Some object was inserted but data was not saved.'
+                        print_status(remaining_objects, config, inserted_class, f'{sequence}/{frame_name}', f_n)
+
+                    if s_index == end_index-1 and not match_find:
+                        remaining_objects[config['insertion']['classes'].index(inserted_class)] -= 1
+
+                        if remaining_objects[config['insertion']['classes'].index(inserted_class)] <= 0:
+                            match_find = True
+
+                        print_status(remaining_objects, config, inserted_class, f'{sequence}/{frame_name}', f_n)
+
+                        if np.max(remaining_objects) <= 0 and some_object_inserted:
+
+                            # SAVING DATA
+                            dataset_functions.save_data(scene_pcl, all_visible_parts, save_folder, frame_name, pcl_idx)
+                            add_objects_name.close()
+                            add_objects_txt_open = False
+                            saved = True
+                            match_find = True
+
+                        quit = False
+                        break
+
+        if not some_object_inserted:
+            dataset_functions.delete_item(pcl_idx)
+            add_objects_name.close()
+            add_objects_txt_open = False
+            os.remove(f'{save_output_folder}/{save_folder}/added_objects/{frame_name}.txt')
+
+        if some_object_inserted and not saved:
+
+            dataset_functions.save_data(scene_pcl, all_visible_parts, save_folder, frame_name, pcl_idx)
+            add_objects_name.close()
+            add_objects_txt_open = False
+            saved = True
+
+        assert not (some_object_inserted and not saved), f'Some object was inserted but data was not saved.'
