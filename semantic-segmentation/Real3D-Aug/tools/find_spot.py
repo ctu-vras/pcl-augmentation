@@ -7,12 +7,12 @@ from scipy.spatial.transform import Rotation as R
 from tools.cut_bbox import cut_bounding_box
 
 HIGHLIGHT = False
-MAC = True
+MAC = False
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [128, 0, 0], [123, 123, 123], [0, 100, 0], [0, 0, 0],
                       [255, 192, 203]])
 
-ROAD_INDEXES = [40, 44, 48, 60]     # Road, Parking, Sidewalk, Traffic sign
+ROAD_INDEXES = [17, 18, 19, 20, 21, 22]     # Road, Parking, Sidewalk, Traffic sign
 
 RED = '\033[91m'
 YELLOW = '\033[93m'
@@ -172,12 +172,8 @@ def check_bounding_box(scene_pcl, scene_anno, sample_pcl, sample_anno, ok_surfac
     ok = True
     volume = cut_bounding_box(scene_pcl, sample_anno)
 
-    if 2 in ok_surface:
-        volume = volume[volume[:, 4] != 48]
-    if 3 in ok_surface:
-        volume = volume[volume[:, 4] != 44]
-    if 1 in ok_surface:
-        volume = volume[volume[:, 4] != 40]
+    for s in ok_surface:
+        volume = volume[volume[:, 7] != s]
 
     if len(volume) > 0:
         ok = False
@@ -202,49 +198,37 @@ def correct_height(scene_pcl, sample_pcl, sample_anno, ok_surface):
     """
     sample_anno = dictionary2array(sample_anno)
     surface = np.array([])
-    sidewalk = np.array([])
-    parking = np.array([])
-    road = np.array([])
     radius = 0.1
+    ok = True
 
     while len(surface) == 0:
-        surface = scene_pcl[(scene_pcl[:, 0]-sample_anno[0][0])**2+(scene_pcl[:, 1]-sample_anno[0][1])**2 <= radius**2]
-        if 2 in ok_surface:
-            sidewalk = surface[surface[:, 4] == 48]
-        if 3 in ok_surface:
-            parking = surface[surface[:, 4] == 44]
-        if 1 in ok_surface:
-            road = surface[surface[:, 4] == 40]
-
         surface = np.array([])
+        near_points = scene_pcl[(scene_pcl[:, 0]-sample_anno[0][0])**2+(scene_pcl[:, 1]-sample_anno[0][1])**2 <= radius**2]
 
-        if len(sidewalk) > 0:
-            surface = sidewalk
-        if len(parking) > 0:
-            if len(surface) > 0:
-                surface = np.append(surface, parking, axis=0)
-            else:
-                surface = parking
-        if len(road) > 0:
-            if len(surface) > 0:
-                surface = np.append(surface, road, axis=0)
-            else:
-                surface = road
+        for s in ok_surface:
+
+            if len(near_points[near_points[:, 4] == s]) > 0:
+                if len(surface) > 0:
+                    surface = np.append(surface, near_points[near_points[:, 4] == s], axis=0)
+                else:
+                    surface = near_points[near_points[:, 4] == s]
 
         if len(surface) > 0:
             surface = surface[surface[:, 2] > -3]
-        radius += 0.1
-    # print('R = ', radius)
 
-    road_level = np.mean(surface, axis=0)[2]
-    new_bbox_z_level = road_level
-    z_move = new_bbox_z_level - sample_anno[0][2]
-    sample_pcl[:, 2] += z_move
-    sample_anno[0][2] = new_bbox_z_level
-    if radius > 5:
-        ok = False
-    else:
-        ok = True
+        radius += 0.1
+
+        if radius > 5:
+            ok = False
+            break
+
+    if ok:
+
+        road_level = np.mean(surface, axis=0)[2]
+        new_bbox_z_level = road_level
+        z_move = new_bbox_z_level - sample_anno[0][2]
+        sample_pcl[:, 2] += z_move
+        sample_anno[0][2] = new_bbox_z_level
 
     sample_anno = make_dictionary(sample_anno)
 
@@ -320,7 +304,12 @@ def find_possible_places(point_cloud, scene_annotation, sample_data, map, map_mo
 
     sample_annotation = read_label_line(sample_annotation)
 
-    ok_surface = config['insertion']['placement'][int(sample_annotation['class'][0])]
+    ok_map_surface = config['insertion']['placement'][int(sample_annotation['class'][0])]
+
+    ok_surface = []
+
+    for map_surface in ok_map_surface:
+        ok_surface = ok_surface + config['insertion']['placement_labels'][map_surface]
 
     not_on_road = 0
     object_collision = 0
@@ -353,7 +342,7 @@ def find_possible_places(point_cloud, scene_annotation, sample_data, map, map_mo
         global_position = global_position[:, global_position[1, :] > -1]
 
         for i in range(len(global_position[0])):
-            if not (map[global_position[0][i]][global_position[1][i]] in ok_surface):
+            if not (map[global_position[0][i]][global_position[1][i]] in ok_map_surface):
                 on_road = False
                 break
 

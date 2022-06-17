@@ -3,7 +3,7 @@ from scipy.spatial.transform import Rotation as R
 
 import numpy as np
 
-MAC = True
+MAC = False
 
 RGB_CLASS = np.array([[255, 0, 0], [255, 255, 0], [255, 0, 255], [0, 0, 255], [123, 123, 123], [0, 255, 0], [0, 0, 0]])
 
