@@ -20,16 +20,11 @@ such as intensity and raydrop.
 ### Overview of the repo
 
 - [Introduction](#Introduction)
-
 - [Content](#Content)
-
-- [Demo](##Demo)
-
-- [Licence](##Licence)
-
-- [Acknowledgement](##Acknowledgement)
-
-- [Contribution](##Contribution)
+- [Demo](#Demo)
+- [Licence](#Licence)
+- [Acknowledgement](#Acknowledgement)
+- [Contribution](#Contribution)
 
 ## Introduction
 
