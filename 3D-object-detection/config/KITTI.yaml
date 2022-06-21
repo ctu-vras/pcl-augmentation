@@ -1,0 +1,25 @@
+# This file is covered by the LICENSE file in the root of this project.
+path:
+  dataset_path : "/datagrid/personal/vacekpa2/students/kitti/training_default"
+  maps_path : "/datagrid/personal/vacekpa2/students/kitti/training_default"
+  label_path : "/datagrid/personal/vacekpa2/students/kitti/training_default/semantic_labels/labels"
+  sample_path : "/datagrid/personal/vacekpa2/students/sebekpe1/KITTI"
+  output_path : "/datagrid/personal/vacekpa2/students/kitti/training_default-demo"
+  train_txt_path : "/datagrid/personal/vacekpa2/students/kitti/training_default/train.txt"
+insertion:
+  classes : ["Cyclist", "Pedestrian"]
+  min_points :
+    "Cyclist" : 40
+    "Pedestrian" : 40
+  random : True
+  number_of_object : 2    # sum of objects if rondom is True
+  number_of_classes : [5, 7]  # number of objects if random is False
+  placement :
+    "Cyclist" : "Road"
+    "Pedestrian" : "Sidewalk"
+  labels_shortcut:
+    "Cyclist": "C"
+    "Pedestrian": "P"
+
+labels:
+  "Road" : 40
