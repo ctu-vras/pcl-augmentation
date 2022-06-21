@@ -3,15 +3,10 @@ import os
 from PIL import Image
 import math
 import glob
-# import open3d as o3d
 import yaml
 from datasets import *
 
-MAC = False
-
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [123, 123, 123], [0, 255, 0], [0, 255, 0], [0, 0, 255]])
-
-ANNOTATION = False
 
 
 def create_image(labels, filename):
@@ -66,45 +61,26 @@ def dataset_selection():
     sequence = None
     if dataset == 'SemanticKITTI':
         print('SemanticKITTI was chosen')
-        if MAC:
-            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
+        
+        with open('../config/semantic-kitti.yaml', 'r') as file:
+            config = yaml.safe_load(file)
 
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
+            quit = False
+            while not quit:
+                print('Choose sequence')
+                sequence = input()
+                if int(sequence) in config['split']['train']:
+                    quit = True
+                    sequence = f'{sequence:02d}'
 
-                dataset_functions = SemanticKITTI(config, sequence)
-
-        else:
-            with open('../config/semantic-kitti.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
-
-                dataset_functions = SemanticKITTI(config, sequence)
+            dataset_functions = SemanticKITTI(config, sequence)
 
     elif dataset == 'Waymo':
         print('Waymo was chosen')
-        if MAC:
-            with open('../config/waymo-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
-
-        else:
-            with open('../config/waymo.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
+        
+        with open('../config/waymo.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            dataset_functions = Waymo(config)
 
     return config, dataset_functions, sequence
 
