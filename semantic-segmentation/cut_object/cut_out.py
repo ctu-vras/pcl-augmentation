@@ -9,8 +9,8 @@ from datasets import *
 
 from tools.cut_bbox import cut_bounding_box
 
-MAC = False
-if MAC:
+DEBUG = False
+if DEBUG:
     from tools.cut_bbox import separate_bbox
     from tools.visualization import *
 
@@ -43,45 +43,26 @@ def dataset_selection():
     sequence = None
     if dataset == 'SemanticKITTI':
         print('SemanticKITTI was chosen')
-        if MAC:
-            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
+        
+        with open('../config/semantic-kitti.yaml', 'r') as file:
+            config = yaml.safe_load(file)
 
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
+            quit = False
+            while not quit:
+                print('Choose sequence')
+                sequence = input()
+                if int(sequence) in config['split']['train']:
+                    quit = True
+                    sequence = f'{sequence:02d}'
 
-                dataset_functions = SemanticKITTI(config, sequence)
-
-        else:
-            with open('../config/semantic-kitti.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
-
-                dataset_functions = SemanticKITTI(config, sequence)
+            dataset_functions = SemanticKITTI(config, sequence)
 
     elif dataset == 'Waymo':
         print('Waymo was chosen')
-        if MAC:
-            with open('../config/waymo-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
 
-        else:
-            with open('../config/waymo.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
+        with open('../config/waymo.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            dataset_functions = Waymo(config)
 
     return config, dataset_functions, sequence
 
@@ -105,7 +86,7 @@ if __name__ == '__main__':
 
     while len(dataset_functions) > 0:
 
-        print(f'\r Remaining {len(dataset_functions):5d} frames', end='')
+        print(f'\rRemaining {len(dataset_functions):5d} frames', end='')
 
         points, _, anno_file, _, sequence = dataset_functions[0]
 
@@ -152,10 +133,7 @@ if __name__ == '__main__':
                           [math.sin(sample_rotation_z), math.cos(sample_rotation_z), 0],
                           [0, 0, 1]]
 
-            if MAC:
-                r = R.from_matrix(rot_matrix)
-            else:
-                r = R.from_dcm(rot_matrix)
+            r = R.from_dcm(rot_matrix)
 
             quaternions = r.as_quat()
 
@@ -167,29 +145,6 @@ if __name__ == '__main__':
 
             bounding_box = cut_bounding_box(points, my_annotation)
 
-            # if int(annotation_items[0]) == 253:      # moving bicyclist
-            #     bicyclist = bounding_box[bounding_box[:, 4] == 253]
-            #     bike = bounding_box[bounding_box[:, 4] == 11]
-            #     bounding_box = np.array([])
-            #     if len(bicyclist) > 0:
-            #         bounding_box = bicyclist
-            #     if len(bike) > 0:
-            #         if len(bounding_box) > 0:
-            #             bounding_box = np.append(bounding_box, bike, axis=0)
-            #         else:
-            #             bounding_box = bike
-            #
-            # elif int(annotation_items[0]) == 255:    # moving motorcyclist
-            #     motocyclist = bounding_box[bounding_box[:, 4] == 255]
-            #     bike = bounding_box[bounding_box[:, 4] == 15]
-            #     bounding_box = np.array([])
-            #     if len(motocyclist) > 0:
-            #         bounding_box = motocyclist
-            #     if len(bike) > 0:
-            #         if len(bounding_box) > 0:
-            #             bounding_box = np.append(bounding_box, bike, axis=0)
-            #         else:
-            #             bounding_box = bike
             bounding_box = bounding_box[bounding_box[:, 4] == int(annotation_items[0])]
 
             if len(bounding_box) < config['insertion']['min_points'][int(annotation_items[0])]:
