@@ -85,7 +85,18 @@ Continue to [semantic segmentation](semantic-segmentation/README.md) or [3D obje
 
 ## Citation
 
-TODO 
+```
+@misc{https://doi.org/10.48550/arxiv.2206.07634,
+  doi = {10.48550/ARXIV.2206.07634},
+  url = {https://arxiv.org/abs/2206.07634},
+  author = {Šebek, Petr and Pokorný, Šimon and Vacek, Patrik and Svoboda, Tomáš},
+  keywords = {Computer Vision and Pattern Recognition (cs.CV), Artificial Intelligence (cs.AI), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {Real3D-Aug: Point Cloud Augmentation by Placing Real Objects with Occlusion Handling for 3D Detection and Segmentation},
+  publisher = {arXiv},
+  year = {2022},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
+```
 
 ## Contribution
 
