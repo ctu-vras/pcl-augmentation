@@ -3,24 +3,6 @@ from scipy.spatial.transform import Rotation as R
 
 import numpy as np
 
-MAC = False
-
-RGB_CLASS = np.array([[255, 0, 0], [255, 255, 0], [255, 0, 255], [0, 0, 255], [123, 123, 123], [0, 255, 0], [0, 0, 0]])
-
-
-def visualization(pcl, colors=True, config=None):
-    print(f'function is not available')
-    # xyz = pcl[:, 0:3]
-    # pcd = o3d.geometry.PointCloud()
-    # pcd.points = o3d.utility.Vector3dVector(xyz)
-    # if colors:
-    #     rgb = np.ones((len(pcl), 3))
-    #     for i in range(len(pcl)):
-    #         rgb[i, :] = RGB_CLASS[int(pcl[i][4])]
-    #     pcd.colors = o3d.utility.Vector3dVector(rgb)
-    # o3d.io.write_point_cloud("current_directory.ply", pcd)
-    # cloud = o3d.io.read_point_cloud("current_directory.ply")  # Read the point cloud
-    # vis = o3d.visualization.draw_geometries([cloud])  # Visualize the point cloud
 
 def cut_bounding_box(point_cloud, annotation, annotation_move=[0, 0, 0]):
     """
@@ -42,10 +24,8 @@ def cut_bounding_box(point_cloud, annotation, annotation_move=[0, 0, 0]):
     height = annotation['height']
 
     r = R.from_quat([Q1, Q2, Q3, Q4])
-    if MAC:
-        rot_matrix = r.as_matrix()
-    else:
-        rot_matrix = r.as_dcm()
+    
+    rot_matrix = r.as_dcm()
 
     bbox = point_cloud[
         rot_matrix[0][0] * point_cloud[:, 0] + rot_matrix[1][0] * point_cloud[:, 1] + rot_matrix[2][
@@ -102,7 +82,7 @@ def separate_bbox(point_cloud, annotation, annotation_move = [0, 0, 0]):
     height = annotation['height']
 
     r = R.from_quat([Q1, Q2, Q3, Q4])
-    rot_matrix = r.as_matrix()
+    rot_matrix = r.as_dcm()
 
     mask_1 = (rot_matrix[0][0] * point_cloud[:, 0] + rot_matrix[1][0] * point_cloud[:, 1] + rot_matrix[2][
             0] * point_cloud[:,
@@ -131,52 +111,11 @@ def separate_bbox(point_cloud, annotation, annotation_move = [0, 0, 0]):
                 yc - rot_matrix[1][2] * 0) + rot_matrix[2][2] *
               (zc - rot_matrix[2][2] * 0))
 
-    final_mask = mask_1
-
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
-
     final_mask = np.ma.mask_or(mask_1, mask_2)
-
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
-
     final_mask = np.ma.mask_or(final_mask, mask_3)
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
-
     final_mask = np.ma.mask_or(final_mask, mask_4)
-
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
-
     final_mask = np.ma.mask_or(final_mask, mask_5)
-
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
-
     final_mask = np.ma.mask_or(final_mask, mask_6)
-
-    scene = point_cloud[final_mask]
-    bbox = point_cloud[final_mask == False]
-    scene[:, 4] = 0
-    bbox[:, 4] = 1
-    visualization(np.append(scene, np.append(bbox, np.array([[xc, yc, zc, 0, 2]]), axis=0), axis=0))
 
     scene = point_cloud[final_mask]
     bbox = point_cloud[final_mask == False]
