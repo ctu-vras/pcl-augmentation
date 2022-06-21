@@ -58,11 +58,16 @@ As it is shown on image below, the process of augmentation is divided into 4 ste
 
 ## Content
 
+Project is divided into two parts, semantic segmentation and 3D object detection. Each section contains README.md, where is clearly described how to use the framework.
+
+
 ```
 3D-object-detection
-  TODO
+  README.md
+  TO DO
   
 semantic-segmentation/
+  README.md
   config/
   cut_object/
   Real3D-Aug/
@@ -78,11 +83,9 @@ Continue to [semantic segmentation](semantic-segmentation/README.md) or [3D obje
 
 `Real3D-Aug` is released under the [licence](LICENCE.md)
 
-## Acknowledgement
-
 ## Citation
 
-Je zapotřebí ?? 
+TODO 
 
 ## Contribution
 
