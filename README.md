@@ -82,6 +82,8 @@ Can run augmentation the procedure by running the python script TASK/Real3D-Aug/
 
 ## Licence
 
+`Real3D-Aug` is released under the [licence](LICENCE.md)
+
 ## Acknowledgement
 
 ## Citation
