@@ -9,8 +9,8 @@ from datasets import *
 
 from tools.cut_bbox import cut_bounding_box
 
-MAC = False
-if MAC:
+DEBUG = False
+if DEBUG:
     from tools.cut_bbox import separate_bbox
     from tools.visualization import *
 
@@ -43,45 +43,26 @@ def dataset_selection():
     sequence = None
     if dataset == 'SemanticKITTI':
         print('SemanticKITTI was chosen')
-        if MAC:
-            with open('../config/semantic-kitti-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
 
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
+        with open('../config/semantic-kitti.yaml', 'r') as file:
+            config = yaml.safe_load(file)
 
-                dataset_functions = SemanticKITTI(config, sequence)
+            quit = False
+            while not quit:
+                print('Choose sequence')
+                sequence = input()
+                if int(sequence) in config['split']['train']:
+                    quit = True
+                    sequence = f'{sequence:02d}'
 
-        else:
-            with open('../config/semantic-kitti.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-
-                quit = False
-                while not quit:
-                    print('Choose sequence')
-                    sequence = input()
-                    if int(sequence) in config['split']['train']:
-                        quit = True
-                        sequence = f'{sequence:02d}'
-
-                dataset_functions = SemanticKITTI(config, sequence)
+            dataset_functions = SemanticKITTI(config, sequence)
 
     elif dataset == 'Waymo':
         print('Waymo was chosen')
-        if MAC:
-            with open('../config/waymo-mac.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
 
-        else:
-            with open('../config/waymo.yaml', 'r') as file:
-                config = yaml.safe_load(file)
-                dataset_functions = Waymo(config)
+        with open('../config/waymo.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            dataset_functions = Waymo(config)
 
     return config, dataset_functions, sequence
 
