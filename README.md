@@ -2,7 +2,7 @@
 
 
 
-<img align="right" src="images/image1.png" width=40%>
+<img align="right" src="images/image1.jpeg" width=40%>
 
 `Real3D-Aug` is a open source project for 3D object detection and semantic segmentation.  
 
@@ -19,7 +19,7 @@ such as intensity and raydrop.
 
 ### Overview of the repo
 
-- [Introduction](##Introduction)
+- [Introduction](Introduction)
 
 - [Content](##Content)
 
