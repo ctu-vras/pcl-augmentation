@@ -437,17 +437,7 @@ if __name__ == '__main__':
                         if DEBUG:
                             tmp = copy.deepcopy(scene_pcl)
                             tmp[:, 7] = 0
-                            visualization(np.append(tmp, np.array([[1.5, 0, 1.7, 0, 0, 0, 0, 6, 0]]), axis=0))
-                            tmp = copy.deepcopy(scene_pcl)
-                            for i in range(len(tmp)):
-                                if tmp[i][7] == 18 or tmp[i][7] == 19:
-                                    tmp[i][7] = 0
-                                elif tmp[i][7] == 20:
-                                    tmp[i][7] = 2
-                                elif tmp[i][7] == 21:
-                                    tmp[i][7] = 3
-                                else:
-                                    tmp[i][7] = 6
+                            
                             for tmp1 in possible_sample_pcl:
                                 tmp1[:, 4] = 1
                                 tmp = np.append(tmp, add_space_for_spherical(tmp1), axis=0)
