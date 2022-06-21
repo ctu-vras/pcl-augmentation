@@ -50,15 +50,13 @@ def smooth_out(original_train, original_label):
                             neighbors += 1
                             sum_distance += original_train[row + drow][column + dcolumn]
                 if neighbors == 0:
-                    print('No neighbor?!')
-                    print('ROW:', row, 'COLUMN:', column)
+                    print('ERROR in function: smooth_out - no neighbor')
+                    print('row:', row, 'column:', column)
                     label[row][column] = 1
                 else:
                     train[row][column] = sum_distance / neighbors
                     label[row][column] = 1
                     if train[row][column] == 0:
                         print('ERROR in function: smooth_out - sum_distance == 0')
-
-    # print(f'computing {time.time() - start:.02f}')
 
     return train, label
