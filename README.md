@@ -69,9 +69,9 @@ semantic-segmentation/
   rich_map/
   
 ```
-## Demo
+## Getting Started
 
-Can run augmentation the procedure by running the python script TASK/Real3D-Aug/insertion.py with modified path to the original dataset.
+Continue to [semantic segmentation](semantic-segmentation/HOWTO.md) or [3D object detection](3D-object-detection/HOWTO.md) part of the project depending on the task you are working on.
 
 
 ## Licence
@@ -82,4 +82,8 @@ Can run augmentation the procedure by running the python script TASK/Real3D-Aug/
 
 ## Citation
 
+Je zapotřebí ?? 
+
 ## Contribution
+
+Feel free to contact us for any potential contributions.
