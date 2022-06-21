@@ -8,7 +8,7 @@ from skimage.morphology import disk
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [0, 255, 0], [123, 123, 123], [0, 255, 0], [0, 0, 255]])
 
-DATA_PATH = ''          # path to KITTI dataset
+DATA_PATH = ''          # path to KITTI pseudo_labels
 
 SAVE_DIRECTORY = ''     # path to output directory
 

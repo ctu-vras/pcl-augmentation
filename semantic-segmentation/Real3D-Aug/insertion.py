@@ -228,7 +228,7 @@ def dataset_selection():
     quit = False
     dataset = 'SemanticKITTI'
     while not quit:
-        print('Choose dataset:')
+        print('Choose pseudo_labels:')
         print('1 - SemanticKITTI')
         print('2 - Waymo')
         tmp = input()
