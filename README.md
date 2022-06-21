@@ -14,9 +14,6 @@ the scan points of newly inserted objects in augmentation sustain the physical c
 such as intensity and raydrop.
 
 
-
-<br clear="right"/>
-
 ### Overview of the repo
 
 - [Introduction](#Introduction)
@@ -25,6 +22,8 @@ such as intensity and raydrop.
 - [Licence](#Licence)
 - [Acknowledgement](#Acknowledgement)
 - [Contribution](#Contribution)
+
+<br clear="right"/>
 
 ## Introduction
 
