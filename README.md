@@ -19,9 +19,9 @@ such as intensity and raydrop.
 
 ### Overview of the repo
 
-- [Introduction](Introduction)
+- [Introduction](#Introduction)
 
-- [Content](##Content)
+- [Content](#Content)
 
 - [Demo](##Demo)
 
