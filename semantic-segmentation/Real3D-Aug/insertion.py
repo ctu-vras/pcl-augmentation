@@ -24,7 +24,6 @@ NUMCOLUMN = 360*4
 
 MAX_NUM_TRIES = 100
 SAMPLE_TIMEOUT = False
-TEST = False
 
 RGB_CLASS = np.array([[255, 0, 0], [255, 255, 0], [255, 0, 255], [0, 0, 255], [123, 123, 123], [0, 255, 0], [0, 0, 0]])
 
