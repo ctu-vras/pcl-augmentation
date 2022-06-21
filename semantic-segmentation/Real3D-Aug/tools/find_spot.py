@@ -6,40 +6,10 @@ from scipy.spatial.transform import Rotation as R
 
 from tools.cut_bbox import cut_bounding_box
 
-HIGHLIGHT = False
-MAC = False
-
-RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [128, 0, 0], [123, 123, 123], [0, 100, 0], [0, 0, 0],
-                      [255, 192, 203]])
-
-ROAD_INDEXES = [17, 18, 19, 20, 21, 22]     # Road, Parking, Sidewalk, Traffic sign
-
 RED = '\033[91m'
 YELLOW = '\033[93m'
 GREEN = '\033[92m'
 DEFAULT = '\033[0m'
-
-
-def create_image(labels, filename):
-    """
-    Function, which creates Image of classes.
-    :param labels: numpy 2D array with classes
-    :param filename: string, name of the image
-    """
-
-    columns = len(labels[0])
-    lines = len(labels)
-    rgb = np.zeros(3 * columns * lines).reshape(lines, columns, 3)
-
-    for i in range(lines):
-        for j in range(columns):
-            labels_idx = int(labels[i][j])
-
-            rgb[i][j] = RGB_CLASS[labels_idx]
-
-    rgb = np.uint8(rgb)
-    img = Image.fromarray(rgb, 'RGB')
-    img.save(filename)
 
 
 def make_dictionary(annotation_array):
@@ -69,53 +39,6 @@ def dictionary2array(annotation_dictionary):
     return annotation_array
 
 
-# def rotate_bounding_box(bbox_pcl, annotation, rotation=1):
-#     """
-#     Function, which rotate point-cloud and annotation around Z point-cloud axes.
-#     :param bbox_pcl: numpy 2D array, point cloud inside bounding box
-#     :param annotation: dictionary, bounding box annotation
-#     :param rotation: float, angle to rotate bounging box (in degrees) default is 1 degree
-#     :return: numpy 2D array, rotated point-cloud
-#              dictionary, annotation of bounding box
-#     """
-#     annotation = dictionary2array(annotation)
-#     rotation = np.deg2rad(rotation)
-#     r = R.from_quat(annotation[1])
-#
-#     if MAC:
-#         rot_matrix = r.as_matrix()
-#     else:
-#         rot_matrix = r.as_dcm()
-#     # print(rot_matrix)
-#     z_rot_matrix = np.array([[np.cos(rotation), -np.sin(rotation), 0],
-#                     [np.sin(rotation), np.cos(rotation), 0],
-#                     [0, 0, 1]])
-#     # print(z_rot_matrix)
-#     final_rotation = np.dot(rot_matrix, z_rot_matrix)
-#
-#     if MAC:
-#         ft = R.from_matrix(final_rotation)
-#     else:
-#         ft = R.from_dcm(final_rotation)
-#
-#     annotation[1] = ft.as_quat()
-#     position = np.array([[annotation[0][0]], [annotation[0][1]], [annotation[0][2]]])
-#     position = np.dot(z_rot_matrix, position)
-#     annotation[0][0] = position[0][0]
-#     annotation[0][1] = position[1][0]
-#     annotation[0][2] = position[2][0]
-#     for i in range(len(bbox_pcl)):
-#         position = np.array([[bbox_pcl[i][0]], [bbox_pcl[i][1]], [bbox_pcl[i][2]]])
-#         position = np.dot(z_rot_matrix, position)
-#         bbox_pcl[i][0] = position[0][0]
-#         bbox_pcl[i][1] = position[1][0]
-#         bbox_pcl[i][2] = position[2][0]
-#
-#     annotation = make_dictionary(annotation)
-#
-#     return bbox_pcl, annotation
-
-
 def rotate_bounding_box_2(bbox_pcl, annotation, rotation=1):
     """
     Function, which rotate point-cloud and annotation around Z point-cloud axes.
@@ -129,21 +52,15 @@ def rotate_bounding_box_2(bbox_pcl, annotation, rotation=1):
     rotation = np.deg2rad(rotation)
     r = R.from_quat(annotation[1])
 
-    if MAC:
-        rot_matrix = r.as_matrix()
-    else:
-        rot_matrix = r.as_dcm()
-    # print(rot_matrix)
+    rot_matrix = r.as_dcm()
+        
     z_rot_matrix = np.array([[np.cos(rotation), -np.sin(rotation), 0],
                     [np.sin(rotation), np.cos(rotation), 0],
                     [0, 0, 1]])
-    # print(z_rot_matrix)
+    
     final_rotation = np.dot(rot_matrix, z_rot_matrix)
 
-    if MAC:
-        ft = R.from_matrix(final_rotation)
-    else:
-        ft = R.from_dcm(final_rotation)
+    ft = R.from_dcm(final_rotation)
 
     annotation[1] = ft.as_quat()
     position = np.array([[annotation[0][0]], [annotation[0][1]], [annotation[0][2]]])
@@ -259,10 +176,7 @@ def read_label_line(line):
                   [math.sin(sample_rotation_z), math.cos(sample_rotation_z), 0],
                   [0, 0, 1]]
 
-    if MAC:
-        r = R.from_matrix(rot_matrix)
-    else:
-        r = R.from_dcm(rot_matrix)
+    r = R.from_dcm(rot_matrix)
 
     quaternions = r.as_quat()
 
@@ -317,19 +231,6 @@ def find_possible_places(point_cloud, scene_annotation, sample_data, map, map_mo
     for rot in range(1, 361):
         on_road = True
         sample_pcl, sample_annotation = rotate_bounding_box_2(sample_pcl, sample_annotation)
-
-        # for sample_point in sample_pcl:
-        #
-        #     x = np.array([[sample_point[0]], [sample_point[1]], [sample_point[2]], [1.]])
-        #     global_position = np.dot(transformation_matrix, x)
-        #     global_position = global_position - map_move
-        #
-        #     if int(global_position[0][0]) > len(map) - 1 or int(global_position[1][0]) > len(map[0]) - 1:
-        #         continue
-        #
-        #     if not (map[int(global_position[0][0])][int(global_position[1][0])] in ok_surface):
-        #         on_road = False
-        #         break
 
         global_position = np.hstack((sample_pcl[:, :3], np.ones((len(sample_pcl), 1)))).T
         global_position = transformation_matrix @ global_position
