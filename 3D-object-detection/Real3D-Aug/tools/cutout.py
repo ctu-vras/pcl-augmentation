@@ -1,8 +1,6 @@
 import numpy as np
 from skimage import io
 
-RGB_CLASS = np.array([[0, 0, 0], [255, 0, 0], [0, 255, 0], [255, 0, 255], [123, 123, 123], [0, 255, 0], [0, 0, 255]])
-
 
 def get_calib_from_file(calib_file):
     with open(calib_file) as f:
