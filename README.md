@@ -58,7 +58,7 @@ As it is shown on image below, the process of augmentation is divided into 4 ste
 3. **Occlusion handling in spherical coordinates** - To ensure the reality of scanning the occlusion is handled. 
 4. **Output** 
 
-![](images/image3.png)
+![](images/image2.jpeg)
 
 
 
