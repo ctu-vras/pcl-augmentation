@@ -50,7 +50,7 @@ As it is shown on image below, the process of augmentation is divided into 4 ste
 1. **Preprocessing** - In the first step we need to create Rich map if it is not provided. For semantic segmentation dataset we also provide method how to create bounding boxes, which are necessary in further stages.
 2. **Placing** In this stage the possible placements are found.
 3. **Occlusion handling in spherical coordinates** - To ensure the reality of scanning the occlusion is handled. 
-4. **Output** 
+4. **Output** - Augmented scene is created and saved.
 
 ![](images/image2.jpeg)
 
