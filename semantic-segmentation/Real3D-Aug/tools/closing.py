@@ -1,38 +1,9 @@
-# import matplotlib.pyplot as plt
 import numpy as np
 from skimage.util import img_as_ubyte
 from skimage.morphology import closing
 from skimage.morphology import rectangle
 from PIL import Image
 import time
-
-PIPELINE = [5, 0, 1, 3, 4, 2]
-CLASS_INDEX = [1, 40, 44, 48]
-DISK_SIZE = 3
-# Road, Background, Car, Bikes, Road blocks, Humans
-RGB_CLASS = np.array([[255, 0, 0], [255, 255, 0], [255, 0, 255], [0, 0, 255], [123, 123, 123], [0, 255, 0], [0, 0, 0], [255, 192, 203]])
-
-def create_image(labels, filename):
-    """
-    Function, which create Image of classes.
-    :param labels: numpy 2D array with classes
-    :param filename: string, name of the image
-    """
-
-    columns = len(labels[0])
-    lines = len(labels)
-    rgb = np.zeros(3 * columns * lines).reshape(lines, columns, 3)
-
-    for i in range(lines):
-        for j in range(columns):
-            labels_idx = int(labels[i][j])
-            rgb[i][j] = RGB_CLASS[labels_idx]
-
-    rgb = np.uint8(rgb)
-    img = Image.fromarray(rgb, 'RGB')
-    img.save(filename)
-    # img.show()
-    return
 
 
 def class_closing(original_label):
@@ -42,13 +13,6 @@ def class_closing(original_label):
     :return: numpy 2D array, closed label FoV
     """
     class_mask = original_label.copy()
-
-    # for row in range(original_label.shape[0]):
-    #     for column in range(original_label.shape[1]):
-    #         if original_label[row][column] in CLASS_INDEX:
-    #             class_mask[row][column] = 1
-    #         else:
-    #             class_mask[row][column] = 0
 
     class_mask = np.clip(class_mask, 0, 1)
 
@@ -69,25 +33,11 @@ def smooth_out(original_train, original_label):
     train = original_train.copy()
     label = original_label.copy()
 
-    # start = time.time()
+    closed_layer = class_closing(original_label)
 
-    closed_layer = class_closing(original_label)    # check value in array
-
-    # print(f'class_closing {time.time() - start:.02f}')
-    #
-    # start = time.time()
-
-    # assert len(np.unique(closed_layer)) == 2, f'Emelents in closed_layer: {np.unique(closed_layer)}'
-    #
-    # print(np.unique(closed_layer))
-
-    # print(f'assert {time.time() - start:.02f}')
-    #
-    # start = time.time()
-
-    for row in range(original_label.shape[0]):  # compare closing results
+    for row in range(original_label.shape[0]):
         for column in range(original_label.shape[1]):
-            if (closed_layer[row][column] == 255 and label[row][column] in CLASS_INDEX) or closed_layer[row][
+            if (closed_layer[row][column] == 255 and label[row][column] == 1) or closed_layer[row][
                 column] == 0:
                 continue
             else:
@@ -96,7 +46,7 @@ def smooth_out(original_train, original_label):
                 for drow in range(-2, 3):
                     for dcolumn in range(-1, 2):
                         if -1 < drow + row < original_label.shape[0] and -1 < dcolumn + column < original_label.shape[
-                            1] and original_label[drow + row][dcolumn + column] in CLASS_INDEX:
+                            1] and original_label[drow + row][dcolumn + column] == 1:
                             neighbors += 1
                             sum_distance += original_train[row + drow][column + dcolumn]
                 if neighbors == 0:
