@@ -103,6 +103,14 @@ Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D obje
 }
 ```
 
+## Acknowledgement
+This work was supported in part by OP VVV MEYS
+funded project CZ.02.1.01/0.0/0.0/16 019/0000765 “Research
+Center for Informatics”, and by Grant Agency of the CTU
+Prague under Project SGS22/111/OHK3/2T/13. Authors want
+to thank colleagues from Valeo R&D for discussions and Valeo
+company for a support.
+
 ## Contribution
 
 Feel free to contact us for any potential contributions.
