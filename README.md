@@ -64,14 +64,19 @@ Project is divided into two parts, semantic segmentation and 3D object detection
 ```
 3D-object-detection
   README.md
-  TO DO
+  config/
+  cut_object/
+  Real3DAug/
+  rich_map/
+  pseudo_labels/
   
 semantic-segmentation/
   README.md
   config/
   cut_object/
-  Real3D-Aug/
+  Real3DAug/
   rich_map/
+  bounding_boxes/
   
 ```
 ## Getting Started
