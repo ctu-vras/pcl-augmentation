@@ -8,6 +8,8 @@ from datasets import *
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [123, 123, 123], [0, 255, 0], [0, 255, 0], [0, 0, 255]])
 
+DEBUG = False
+
 
 def create_image(labels, filename):
     """
@@ -106,10 +108,11 @@ if __name__ == '__main__':
         os.mkdir(f'{save_path}/maps')
     if not os.path.exists(f'{save_path}/maps/small'):
         os.mkdir(f'{save_path}/maps/small')
-    if not os.path.exists(f'{save_path}/maps/small/picture'):
-        os.mkdir(f'{save_path}/maps/small/picture')
     if not os.path.exists(f'{save_path}/maps/small/npz'):
         os.mkdir(f'{save_path}/maps/small/npz')
+    if DEBUG:
+        if not os.path.exists(f'{save_path}/maps/small/picture'):
+            os.mkdir(f'{save_path}/maps/small/picture')
 
     old_sequence = dataset_functions.sequence
     new_sequence = dataset_functions.sequence
