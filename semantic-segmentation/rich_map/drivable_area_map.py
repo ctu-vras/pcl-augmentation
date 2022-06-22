@@ -124,7 +124,7 @@ if __name__ == '__main__':
         min_global_x = math.inf
         max_global_y = -math.inf
         min_global_y = math.inf
-        print(f'OLD:{old_sequence} CREATING NEW:{new_sequence}')
+        print(f'{old_sequence}')
         while old_sequence == new_sequence:
 
             pcl, t_matrix, _, _, new_sequence = dataset_functions[idx]
@@ -151,10 +151,11 @@ if __name__ == '__main__':
                 break
 
         num_seq_pcl = idx
-
-        print(f'SEQUENCE {old_sequence}')
-        print('LEFT TOP: [', min_global_x, ',', min_global_y, ']')
-        print('RIGHT BOTTOM: [', max_global_x, ',', max_global_y, ']')
+        
+        if DEBUG:
+            print(f'SEQUENCE {old_sequence}')
+            print('LEFT TOP: [', min_global_x, ',', min_global_y, ']')
+            print('RIGHT BOTTOM: [', max_global_x, ',', max_global_y, ']')
 
         min_global_x = int(np.floor(min_global_x))
         min_global_y = int(np.floor(min_global_y))
@@ -166,20 +167,12 @@ if __name__ == '__main__':
 
         size_y = int(max_global_y - min_global_y)
 
-        print(size_x, size_y)
-
         scene_driveable_area = np.zeros((size_x, size_y))
-
-        skip = False
 
         for i in range(num_seq_pcl):
             pcl, t_matrix, _, _, _ = dataset_functions[0]
             dataset_functions.delete_item(0, subdirectoties=False)
-
-            if os.path.exists(f'{save_path}/maps/small/picture/{old_sequence}.png'):
-                skip = True
-                continue
-
+            
             points = pcl[:, :4]
             points[:, 3] = 1
             points = t_matrix @ points.T
@@ -206,10 +199,10 @@ if __name__ == '__main__':
                     if scene_driveable_area[int(position_x)][int(position_y)] != 3:
                         scene_driveable_area[int(position_x)][int(position_y)] = 2
 
-        if not skip:
-
+        if DEBUG:
             create_image(scene_driveable_area, f'{save_path}/maps/small/picture/{old_sequence}.png')
-            np.savez(f'{save_path}/maps/small/npz/{old_sequence}',
+            
+        np.savez(f'{save_path}/maps/small/npz/{old_sequence}',
                      move=np.array([[min_global_x], [min_global_y], [0], [1]]), map=scene_driveable_area)
 
         idx = 0
