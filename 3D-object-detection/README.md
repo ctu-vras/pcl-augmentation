@@ -15,7 +15,7 @@
    - *random* - bool variable, if it is **True** method adds to frames as many objects as value of *number_of_object* is, however number of samples of each class will be randomly generated. If it is **False** algorithm uses *number_of_classes* as number of samples of each class, which adds to frames
    - *number_of_object* - number of objects, which are placed in frame (relevant only if *random* is **True**)
    - *number_of_classes* - list with same shape as *classes*. Values in list represent number of samples, which will be places in frame, of corresponding class in *classes*
-   - *placement - name of semantic label, where object can be located, e.i. "Road" for cyclist and "Sidewalk" for pedestrians.
+   - *placement* - name of semantic label, where object can be located, e.i. "Road" for cyclist and "Sidewalk" for pedestrians.
    - *labels_shortcut* - shortcut of classes name (1-3 letters recommended)
    - *labels* - indexes of semantic labels
 
