@@ -35,4 +35,4 @@ If this is first run of script on chosen dataset, algorithm start right away. If
 Algorithm can run on multiple cores at ones without overleaping computations, therefore feel free to run algorithm multiple times on same save folder in order to decrease time, which is needed to augment whole dataset.
 
 ## Own dataset
-If you want to launch algorithm on your own dataset, you need to create config file and class in datasets.py acording to [waymo.yaml](config/waymo.yaml) and [datasets.py](Real3D-Aug/tools/datasets.py)
+If you want to launch algorithm on your own dataset, you need to create config file and dataset class in datasets.py acording to [waymo.yaml](config/waymo.yaml) and [datasets.py](Real3D-Aug/tools/datasets.py)
