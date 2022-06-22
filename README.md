@@ -14,7 +14,7 @@ the scan points of newly inserted objects in augmentation sustain the physical c
 such as intensity and raydrop.
 
 
-### Overview of the repo
+### Overview
 
 - [Introduction](#Introduction)
 - [Content](#Content)
@@ -61,7 +61,7 @@ Project is divided into two parts, semantic segmentation and 3D object detection
 
 
 ```
-3D-object-detection
+object_detection
   README.md
   config/
   cut_object/
@@ -69,7 +69,7 @@ Project is divided into two parts, semantic segmentation and 3D object detection
   rich_map/
   pseudo_labels/
   
-semantic-segmentation/
+semantic_segmentation/
   README.md
   config/
   cut_object/
