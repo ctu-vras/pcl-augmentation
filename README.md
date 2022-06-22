@@ -35,7 +35,7 @@ propose a data augmentation method that takes advantage of
 already annotated data multiple times. We propose an augmentation framework `Real3D-Aug`. 
 
 
-### Proposed-pipeline 
+### Proposed pipeline 
 
 The pipeline proves competitive in training top-performing models
 for 3D object detection and semantic segmentation. The new
