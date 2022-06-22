@@ -1,4 +1,4 @@
-# Launching Real3D-Aug for semantic dataset
+# Launching Real3D-Aug for Semantic segmentation dataset
 
 ## 1. Adjusting config file
 
