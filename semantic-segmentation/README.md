@@ -20,6 +20,6 @@
    - *labels* - full names of classes
 
 
-[^*] - placements indexes are arbitrary, in semantic-kitti.yaml 1 stands for road, 2 for sidewalk and 3 for parking. However in waymo.yaml 1 stand for road, 2 for sidewalk and 3 for crosswalk.
+[^*]: placements indexes are arbitrary, in semantic-kitti.yaml 1 stands for road, 2 for sidewalk and 3 for parking. However in waymo.yaml 1 stand for road, 2 for sidewalk and 3 for crosswalk.
 
 Can run augmentation the procedure by running the python script TASK/Real3D-Aug/insertion.py with modified path to the original dataset.
