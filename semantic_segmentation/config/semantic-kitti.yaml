@@ -1,7 +1,7 @@
 # Extended config from Semantic-KITTI
 path:
   dataset_path : ""
-  maps_path : "" + "/maps/small/npz"
+  maps_path : "/maps/small/npz"
   annotation_path : ""
   bbox_path : ""
   output_path : ""
