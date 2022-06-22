@@ -15,7 +15,7 @@ __all__ = {
 
 def parse_args():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--cfg_file', type=str, required=True,
+    parser.add_argument('--cfg_file', type=str, required=False,
                         help='specify the config for training - Waymo/SemanticKITTI')
     args = parser.parse_args()
     return args
@@ -32,13 +32,14 @@ def load_yaml(filename):
 
 def main():
     args = parse_args()
+    args.cfg_file = "Waymo"
     if args.cfg_file != ("Waymo" or "SemanticKITTI"):
         raise NotImplementedError
     else:
         cfg = load_yaml((__all__[args.cfg_file])[1])
         dataset = (__all__[args.cfg_file])[0](cfg)
 
-    bbox = BoundingBox()
+    bbox = BoundingBox(car_label=cfg["labels"]["car"])
     for idx, (pcl, _, path, instance, _) in enumerate(tqdm(dataset)):
 
         if os.path.exists(path):

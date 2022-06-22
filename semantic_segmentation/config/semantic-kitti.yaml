@@ -45,6 +45,7 @@ labels:
   0 : "unlabeled"
   1 : "outlier"
   10: "car"
+  car: 10
   11: "bicycle"
   13: "bus"
   15: "motorcycle"

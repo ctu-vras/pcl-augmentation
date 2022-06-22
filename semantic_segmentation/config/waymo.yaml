@@ -33,6 +33,7 @@ insertion:
 labels:
   0 : "undefined"
   1 : "car"
+  car : 1
   2 : "other-vehicle"
   3 : "bus"
   4 : "truck"

@@ -74,7 +74,7 @@ class Ransac_line():
 
 
 class BoundingBox():
-    def __init__(self):
+    def __init__(self, car_label):
         self.pts = np.zeros((0, 3))
         self.bbox = {'label': None,
                      'area': None,
@@ -85,6 +85,7 @@ class BoundingBox():
                      'unit_vector': None,
                      'unit_vector_angle': None
                      }
+        self.car_label = car_label
 
     def create_bounding_box(self, pts, label: int = None, z: str = "center", refiment: bool = False):
         """
@@ -128,7 +129,7 @@ class BoundingBox():
                                                           min_rectangle['center'], z)
         min_rectangle['label'] = label
 
-        if refiment and label == 1:
+        if refiment and label == self.car_label: # label 1 for Waymo || label 10 for semantic kitti
             min_rectangle['length'] = np.max([3.35, min_rectangle['length']])
             min_rectangle['height'] = np.max([1.39, min_rectangle['height']])
             min_rectangle['width'] = np.max([1.51, min_rectangle['width']])
