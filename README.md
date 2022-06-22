@@ -17,9 +17,9 @@ such as intensity and raydrop.
 ### Overview
 
 - [Introduction](#Introduction)
-- [Proposed pipeline](#Proposed pipeline)
+- [Proposed pipeline](#Proposed)
 - [Content](#Content)
-- [Getting Started](#Getting Started)
+- [Getting Started](#Getting)
 - [Licence](#Licence)
 - [Citation](#Citation)
 - [Acknowledgement](#Acknowledgement)
