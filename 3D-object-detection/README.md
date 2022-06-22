@@ -1,26 +1,25 @@
-# Launching Real3D-Aug for Semantic segmentation dataset
+# Launching Real3D-Aug for 3D object detection dataset
 
 ## 1. Adjusting config file
 
 - Adjust paths
    - *dataset_path* - path to dataset files
-   - *maps_path* - path to directory, where created map will be stored (path must end with: /maps/small/npz, but these directories is created automatically)
-   - *annotation_path* - path to directory, where created bouding boxes of frame objects will be stored
-   - *bbox_path* - path to directory, where cutted objects will be stored
+   - *maps_path* - path to directory, where created map will be stored
+   - *label_path* - path to directory, where semantic labels are stored
+   - *sample_path* - path to directory, where cutted objects will be stored
    - *output_path* - path to directory, where outputs of the algorithm will be stored
+   - *train_txt_path*[^*] - path to txt file, which contains names of frame in training part of dataset
 - Insertion paramethers
-   - *classes* - set of classes indexes, which would augment frames (all these classes need to have filled: min_points, placement, labels_shortcut and labels)
+   - *classes* - set of classes names, which would augment frames (all these classes need to have filled: min_points, placement, labels_shortcut and labels)
    - *min_points* - minimal number of object points, which need to be visible to add object to frame
    - *random* - bool variable, if it is **True** method adds to frames as many objects as value of *number_of_object* is, however number of samples of each class will be randomly generated. If it is **False** algorithm uses *number_of_classes* as number of samples of each class, which adds to frames
    - *number_of_object* - number of objects, which are placed in frame (relevant only if *random* is **True**)
    - *number_of_classes* - list with same shape as *classes*. Values in list represent number of samples, which will be places in frame, of corresponding class in *classes*
-   - *placement*[^*] - list of "surfaces", where object can be located. These "surfaces" are deffined by *placement_labels*.
-   - *placement_labels*[^*] - list of labels, which create placement location, e.g. road is combination of points annotated as Road and Lane-marking
+   - *placement - name of semantic label, where object can be located, e.i. "Road" for cyclist and "Sidewalk" for pedestrians.
    - *labels_shortcut* - shortcut of classes name (1-3 letters recommended)
-   - *labels* - full names of classes
+   - *labels* - indexes of semantic labels
 
-
-[^*]: placements indexes are arbitrary, in semantic-kitti.yaml 1 stands for road, 2 for sidewalk and 3 for parking. However in waymo.yaml 1 stand for road, 2 for sidewalk and 3 for crosswalk.
+[^*]: for KITTI dataset
 
 ## 2. Data preprocessing
 - **Rich maps**  
