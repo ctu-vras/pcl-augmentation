@@ -31,9 +31,9 @@ For pseudo-labeling we choose Cylinder3D, which was second on segmentation task 
 Codes were adjusted for our purpose. To create prediction of semantic KITTI (pseudo labels, which we used for insertion of cars) you need to run [main.py](pseudo_labels/create_labels/main.py) in dir ```pseudo_labels/create_labels/main.py``` with args ```--demo-folder "str:path to velodyne data" --save-folder "str:path to file, where you want save predictions" --cuda "int:number of cude, which you want to connect to```
 
 ## 3. Data augmentation
-Augmentation is launched by running python script [insertion.py](Real3D-Aug/insertion.py). At fitst you need to choose, which dataset you want to augment. 
+Augmentation is launched by running python script [insertion.py](Real3DAug/insertion.py). At fitst you need to choose, which dataset you want to augment. 
 If this is first run of script on chosen dataset, algorithm start right away. If not on terminal will show: *Default save folder is already existing do you want change name? [yes/no]*. If you choose *yes*, you can change save folder (only values 0-99 is valid) in order to achieve e.i. 5:1 augmented to original frames.
 Algorithm can run on multiple cores at ones without overleaping computations, therefore feel free to run algorithm multiple times on same save folder in order to decrease time, which is needed to augment whole dataset.
 
 ## Own dataset
-If you want to launch algorithm on your own dataset, you need to create config file and dataset class in datasets.py acording to [KITTI.yaml](config/KITTI.yaml) and [datasets.py](Real3D-Aug/tools/datasets.py).
+If you want to launch algorithm on your own dataset, you need to create config file and dataset class in datasets.py acording to [KITTI.yaml](config/KITTI.yaml) and [datasets.py](Real3DAug/tools/datasets.py).

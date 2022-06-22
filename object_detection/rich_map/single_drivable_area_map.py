@@ -6,8 +6,7 @@ import yaml
 from skimage.util import img_as_ubyte
 from skimage.morphology import closing, dilation
 from skimage.morphology import disk
-
-from datasets import *
+from object_detection.Real3DAug.tools.datasets import *
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [0, 255, 0], [123, 123, 123], [0, 255, 0], [0, 0, 255]])
 

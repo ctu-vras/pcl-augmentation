@@ -80,7 +80,7 @@ semantic-segmentation/
 ```
 ## Getting Started
 
-Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D object detection](3D-object-detection/README.md) part of the project depending on the task you are working on.
+Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D object detection](object_detection/README.md) part of the project depending on the task you are working on.
 
 
 ## Licence
