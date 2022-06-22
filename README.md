@@ -21,7 +21,7 @@ such as intensity and raydrop.
 - [Content](#Content)
 - [Getting Started](#Getting-Started)
 - [Licence](#Licence)
-- [Publication / Citation](#Citation)
+- [Publication / Citation](#Publication-/-Citation)
 - [Acknowledgement](#Acknowledgement)
 - [Contribution](#Contribution)
 
