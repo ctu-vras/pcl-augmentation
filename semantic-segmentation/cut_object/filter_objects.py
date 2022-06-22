@@ -9,11 +9,6 @@ from datasets import *
 
 from tools.cut_bbox import cut_bounding_box
 
-DEBUG = False
-if DEBUG:
-    from tools.cut_bbox import separate_bbox
-    from tools.visualization import *
-
 
 def make_dictionary(annotation_array):
     center = {'x': annotation_array[0][0], 'y': annotation_array[0][1], 'z': annotation_array[0][2]}
