@@ -4,7 +4,7 @@ from PIL import Image
 import math
 import glob
 import yaml
-from datasets import *
+from semantic_segmentation.Real3DAug.tools.datasets import *
 
 RGB_CLASS = np.array([[0, 0, 128], [0, 191, 255], [255, 0, 255], [123, 123, 123], [0, 255, 0], [0, 255, 0], [0, 0, 255]])
 
