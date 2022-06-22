@@ -21,7 +21,7 @@ such as intensity and raydrop.
 - [Content](#Content)
 - [Getting Started](#Getting-Started)
 - [Licence](#Licence)
-- [Publication / Citation](#Publication-/-Citation)
+- [Publication / Citation](#Publication)
 - [Acknowledgement](#Acknowledgement)
 - [Contribution](#Contribution)
 
@@ -89,7 +89,7 @@ Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D obje
 
 `Real3D-Aug` is released under the [licence](LICENCE.md)
 
-## Publication / Citation
+## Publication
 This repository is connected to publication: Real3D-Aug: Point Cloud Augmentation by Placing Real Objects with Occlusion Handling for 3D Detection and Segmentation [arxiv](https://arxiv.org/abs/2206.07634).
 ```
 @misc{https://doi.org/10.48550/arxiv.2206.07634,
