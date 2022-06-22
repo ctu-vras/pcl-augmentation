@@ -87,7 +87,7 @@ Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D obje
 
 ## Licence
 
-`Real3D-Aug` is released under the [licence](LICENCE.md)
+`Real3D-Aug` is released under the [MIT License](LICENCE.md)
 
 ## Publication
 This repository is connected to publication: Real3D-Aug: Point Cloud Augmentation by Placing Real Objects with Occlusion Handling for 3D Detection and Segmentation [arxiv](https://arxiv.org/abs/2206.07634).
