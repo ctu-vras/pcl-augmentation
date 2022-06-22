@@ -1,4 +1,4 @@
-# Real3D-Aug
+# Real3D-Aug: Point Cloud Augmentation by Placing Real Objects with Occlusion Handling for 3D Detection and Segmentation
 
 
 
@@ -14,12 +14,14 @@ the scan points of newly inserted objects in augmentation sustain the physical c
 such as intensity and raydrop.
 
 
-### Overview of the repo
+### Overview
 
 - [Introduction](#Introduction)
+- [Proposed pipeline](#Proposed-pipeline)
 - [Content](#Content)
-- [Demo](#Demo)
+- [Getting Started](#Getting-Started)
 - [Licence](#Licence)
+- [Publication / Citation](#Publication)
 - [Acknowledgement](#Acknowledgement)
 - [Contribution](#Contribution)
 
@@ -61,7 +63,7 @@ Project is divided into two parts, semantic segmentation and 3D object detection
 
 
 ```
-3D-object-detection
+object_detection
   README.md
   config/
   cut_object/
@@ -69,7 +71,7 @@ Project is divided into two parts, semantic segmentation and 3D object detection
   rich_map/
   pseudo_labels/
   
-semantic-segmentation/
+semantic_segmentation/
   README.md
   config/
   cut_object/
@@ -85,10 +87,10 @@ Continue to [semantic segmentation](semantic_segmentation/README.md) or [3D obje
 
 ## Licence
 
-`Real3D-Aug` is released under the [licence](LICENCE.md)
+`Real3D-Aug` is released under the [MIT License](LICENCE.md)
 
-## Citation
-
+## Publication
+This repository is connected to publication: Real3D-Aug: Point Cloud Augmentation by Placing Real Objects with Occlusion Handling for 3D Detection and Segmentation [arxiv](https://arxiv.org/abs/2206.07634).
 ```
 @misc{https://doi.org/10.48550/arxiv.2206.07634,
   doi = {10.48550/ARXIV.2206.07634},
