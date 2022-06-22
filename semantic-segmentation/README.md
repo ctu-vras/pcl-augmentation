@@ -1,6 +1,6 @@
 # Launching Real3D-Aug for semantic dataset
 
-## 1.Adjusting config file
+## 1. Adjusting config file
 
 - Adjust paths
    - *dataset_path* - path to dataset files
