@@ -12,5 +12,14 @@
    - *classes* - set of classes indexes, which would augment frames (all these classes need to have filled: min_points, placement, labels_shortcut and labels)
    - *min_points* - minimal number of object points, which need to be visible to add object to frame
    - *random* - bool variable, if it is **True** method adds to frames as many objects as value of *number_of_object* is, however number of samples of each class will be randomly generated. If it is **False** algorithm uses *number_of_classes* as number of samples of each class, which adds to frames
+   - *number_of_object* - number of objects, which are placed in frame (relevant only if *ramdom* is **True**)
+   - *number_of_classes* - list with same shape as *classes*. Values in list represent number of samples, which will be places in frame, of corresponding class in *classes*
+   - *placement*[^*] - 
+   - *placement_labels*[^*] - 
+   - *labels_shortcut* - shortcut of classes name (1-3 letters recommended)
+   - *labels* - full names of classes
+
+
+[^*] - placements indexes are arbitrary, in semantic-kitti.yaml 1 stands for road, 2 for sidewalk and 3 for parking. However in waymo.yaml 1 stand for road, 2 for sidewalk and 3 for crosswalk.
 
 Can run augmentation the procedure by running the python script TASK/Real3D-Aug/insertion.py with modified path to the original dataset.
