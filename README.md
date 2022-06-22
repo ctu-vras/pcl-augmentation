@@ -18,7 +18,6 @@ such as intensity and raydrop.
 
 - [Introduction](#Introduction)
 - [Content](#Content)
-<!--- - [Demo](#Demo) -->
 - [Licence](#Licence)
 - [Acknowledgement](#Acknowledgement)
 - [Contribution](#Contribution)
