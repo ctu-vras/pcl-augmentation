@@ -30,8 +30,7 @@ such as intensity and raydrop.
 Object detection and semantic segmentation with
 the 3D lidar point cloud data require expensive annotation. We
 propose a data augmentation method that takes advantage of
-already annotated data multiple times. We propose an augmenta-
-tion framework `Real3D-Aug`. 
+already annotated data multiple times. We propose an augmentation framework `Real3D-Aug`. 
 
 
 ### Proposed pipeline 
