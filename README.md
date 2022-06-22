@@ -19,7 +19,7 @@ such as intensity and raydrop.
 - [Introduction](#Introduction)
 - [Proposed pipeline](#Proposed-pipeline)
 - [Content](#Content)
-- [Getting Started](#Getting)
+- [Getting Started](#Getting-Started)
 - [Licence](#Licence)
 - [Citation](#Citation)
 - [Acknowledgement](#Acknowledgement)
