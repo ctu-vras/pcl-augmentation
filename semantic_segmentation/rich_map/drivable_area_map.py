@@ -73,7 +73,7 @@ def dataset_selection():
                 sequence = input()
                 if int(sequence) in config['split']['train']:
                     quit = True
-                    sequence = f'{sequence:02d}'
+                    sequence = str(sequence).zfill(2)
 
             dataset_functions = SemanticKITTI(config, sequence)
 
@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
         for i in range(num_seq_pcl):
             pcl, t_matrix, _, _, _ = dataset_functions[0]
-            dataset_functions.delete_item(0, subdirectoties=False)
+            dataset_functions.delete_item(0)
             
             points = pcl[:, :4]
             points[:, 3] = 1
