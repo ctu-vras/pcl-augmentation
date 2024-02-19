@@ -52,7 +52,7 @@ def dataset_selection():
                 sequence = input()
                 if int(sequence) in config['split']['train']:
                     quit = True
-                    sequence = f'{sequence:02d}'
+                    sequence = str(sequences).zfill(2) # f'{sequence:02d}'
 
             dataset_functions = SemanticKITTI(config, sequence)
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
         points, _, anno_file, _, sequence = dataset_functions[0]
 
-        dataset_functions.delete_item(0, subdirectoties=False)
+        dataset_functions.delete_item(0)
 
         if not os.path.exists(anno_file):
             continue
