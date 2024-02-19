@@ -17,6 +17,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description='arg parser')
     parser.add_argument('--cfg_file', type=str, required=False,
                         help='specify the config for training - Waymo/SemanticKITTI')
+    parser.add_argument(
+        "--sequence",
+        type=str,
+        required=False,
+        help="Sequence for SemanticKITTI",
+    )
     args = parser.parse_args()
     return args
 
@@ -33,11 +39,12 @@ def load_yaml(filename):
 def main():
     args = parse_args()
     args.cfg_file = "Waymo"
+    args.sequence = args.sequence.zfill(2)
     if args.cfg_file != ("Waymo" or "SemanticKITTI"):
         raise NotImplementedError
     else:
         cfg = load_yaml((__all__[args.cfg_file])[1])
-        dataset = (__all__[args.cfg_file])[0](cfg)
+        dataset = (__all__[args.cfg_file])[0](cfg, args.sequence)
 
     bbox = BoundingBox(car_label=cfg["labels"]["car"])
     for idx, (pcl, _, path, instance, _) in enumerate(tqdm(dataset)):
